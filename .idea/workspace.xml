@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="c8aab1ae-ff74-46c8-a28e-a479e89d50d1" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/.gitignore" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/out/.gitignore" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/mukulrathi/algorithms/sorting/BinaryInsertionSort.java" afterPath="$PROJECT_DIR$/src/mukulrathi/algorithms/sorting/BinaryInsertionSort.java" />
-    </list>
+    <list default="true" id="c8aab1ae-ff74-46c8-a28e-a479e89d50d1" name="Default" comment="" />
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -100,56 +95,6 @@
             <path>
               <item name="1A Algorithms &amp; Data Structures" type="b2602c69:ProjectViewProjectNode" />
               <item name="1A Algorithms &amp; Data Structures" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="1A Algorithms &amp; Data Structures" type="b2602c69:ProjectViewProjectNode" />
-              <item name="1A Algorithms &amp; Data Structures" type="462c0819:PsiDirectoryNode" />
-              <item name=".idea" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="1A Algorithms &amp; Data Structures" type="b2602c69:ProjectViewProjectNode" />
-              <item name="1A Algorithms &amp; Data Structures" type="462c0819:PsiDirectoryNode" />
-              <item name="out" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="1A Algorithms &amp; Data Structures" type="b2602c69:ProjectViewProjectNode" />
-              <item name="1A Algorithms &amp; Data Structures" type="462c0819:PsiDirectoryNode" />
-              <item name="out" type="462c0819:PsiDirectoryNode" />
-              <item name="production" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="1A Algorithms &amp; Data Structures" type="b2602c69:ProjectViewProjectNode" />
-              <item name="1A Algorithms &amp; Data Structures" type="462c0819:PsiDirectoryNode" />
-              <item name="out" type="462c0819:PsiDirectoryNode" />
-              <item name="production" type="462c0819:PsiDirectoryNode" />
-              <item name="1A Algorithms &amp; Data Structures" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="1A Algorithms &amp; Data Structures" type="b2602c69:ProjectViewProjectNode" />
-              <item name="1A Algorithms &amp; Data Structures" type="462c0819:PsiDirectoryNode" />
-              <item name="out" type="462c0819:PsiDirectoryNode" />
-              <item name="production" type="462c0819:PsiDirectoryNode" />
-              <item name="1A Algorithms &amp; Data Structures" type="462c0819:PsiDirectoryNode" />
-              <item name="mukulrathi" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="1A Algorithms &amp; Data Structures" type="b2602c69:ProjectViewProjectNode" />
-              <item name="1A Algorithms &amp; Data Structures" type="462c0819:PsiDirectoryNode" />
-              <item name="out" type="462c0819:PsiDirectoryNode" />
-              <item name="production" type="462c0819:PsiDirectoryNode" />
-              <item name="1A Algorithms &amp; Data Structures" type="462c0819:PsiDirectoryNode" />
-              <item name="mukulrathi" type="462c0819:PsiDirectoryNode" />
-              <item name="algorithms" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="1A Algorithms &amp; Data Structures" type="b2602c69:ProjectViewProjectNode" />
-              <item name="1A Algorithms &amp; Data Structures" type="462c0819:PsiDirectoryNode" />
-              <item name="out" type="462c0819:PsiDirectoryNode" />
-              <item name="production" type="462c0819:PsiDirectoryNode" />
-              <item name="1A Algorithms &amp; Data Structures" type="462c0819:PsiDirectoryNode" />
-              <item name="mukulrathi" type="462c0819:PsiDirectoryNode" />
-              <item name="algorithms" type="462c0819:PsiDirectoryNode" />
-              <item name="sorting" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="1A Algorithms &amp; Data Structures" type="b2602c69:ProjectViewProjectNode" />
@@ -290,16 +235,15 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1521650411507</updated>
-      <workItem from="1521650414708" duration="355000" />
+      <workItem from="1521650414708" duration="448000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="355000" />
+    <option name="totallyTimeSpent" value="448000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="878" y="23" width="1049" height="936" extended-state="0" />
-    <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -314,7 +258,7 @@
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24925521" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24925521" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
