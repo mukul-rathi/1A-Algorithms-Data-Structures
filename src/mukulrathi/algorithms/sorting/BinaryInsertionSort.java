@@ -1,7 +1,11 @@
 package mukulrathi.algorithms.sorting;
 
 public class BinaryInsertionSort implements SortingAlgo{
-
+/*
+This is a modification of traditional insertion sort - instead of doing a linear
+search when identifying the lowest element greater than key, we use a binary search
+to reduce number of comparisons.
+ */
     @Override
     public int[] sort(int[] A){
 
