@@ -28,7 +28,8 @@ public class CountingSort implements SortingAlgo{
         return answer;
     }
 
-    //for radix sort, we need to sort by digit
+    //for radix sort, we need to sort by digit, so counting sort is modified slightly to
+    //compare the digit, but sort the actual numbers.
     public int[] sortForRadix(int[] A, int place) {
 
         int[] count = new int[mRange+1];
