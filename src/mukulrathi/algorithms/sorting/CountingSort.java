@@ -9,20 +9,25 @@ public class CountingSort implements SortingAlgo{
     }
 
     @Override
-    public int[] sort(int[] A) {
+    public int[] sort(int[] A) { //this is O(n+k)
 
-        int[] count = new int[mRange+1];
+        int[] count = new int[mRange+1]; //keep track of the number of counts for each number in range 0...mRange inclusive
         for(int i=0; i<A.length;i++){
-            count[A[i]]++;
+            count[A[i]]++; //increment the relevant number
         }
 
-        int answer[] = new int[A.length];
-
+        //we now store cumulative counts i.e for cell i the no. of elements <=i.
         for(int i=1;i<count.length;i++){
                 count[i] += count[i-1];
         }
+
+        int answer[] = new int[A.length]; //sorted answer array
+
+        //we traverse list backwards to maintain original ordering of equal elements (stable sort)
         for (int i=A.length-1;i>=0;i--){
-                answer[count[A[i]]-- -1] = A[i]; //-1 since indexed from 0...A.length -1 not 1...A.length
+                answer[count[A[i]]-- -1] = A[i]; // -1 since indexed from 0...A.length -1 not 1...A.length
+                //NB we decrement counter for count[A[i]] so that the next element we encounter with same
+                //value goes in place before it.
         }
 
         return answer;
