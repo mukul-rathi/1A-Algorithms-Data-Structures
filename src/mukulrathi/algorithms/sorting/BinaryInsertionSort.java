@@ -4,6 +4,7 @@ public class BinaryInsertionSort implements SortingAlgo{
 
     @Override
     public int[] sort(int[] A){
+
         for(int i=1;i<A.length;i++){
             int key = A[i];
             //binary search to find lowest element greater than the key
