@@ -2,6 +2,10 @@ package mukulrathi.algorithms.sorting;
 
 import java.util.Scanner;
 
+
+/*This is a test class with a main method that can be used to test each of the
+  sorting algorithms - this uses the Strategy Java Design Pattern.
+*/
 public class Tester {
     private static int[] test;
     private static SortingAlgo sorter;
