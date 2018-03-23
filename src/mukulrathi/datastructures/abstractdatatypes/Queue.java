@@ -2,7 +2,8 @@ package mukulrathi.datastructures.abstractdatatypes;
 
 import mukulrathi.customexceptions.UnderflowException;
 /*
-    This is a FIFO (First-In-First-Out) ADT.
+    This is a FIFO (First-In-First-Out) ADT. As with Stacks, can use either arrays or linked lists
+    to implement it.
  */
 public interface Queue<T> {
     boolean isEmpty(); //returns true if queue is empty, false otherwise
