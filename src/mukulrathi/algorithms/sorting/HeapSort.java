@@ -1,4 +1,7 @@
 package mukulrathi.algorithms.sorting;
+
+import mukulrathi.UnderflowException;
+
 /*
 We implement heap-sort using an underlying max-heap data structure
  */

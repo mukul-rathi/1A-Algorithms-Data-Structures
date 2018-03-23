@@ -1,4 +1,4 @@
-package mukulrathi.algorithms.sorting;
+package mukulrathi;
 
 public class UnderflowException extends Exception {
 }
