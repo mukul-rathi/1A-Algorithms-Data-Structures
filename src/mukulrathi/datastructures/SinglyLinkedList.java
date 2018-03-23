@@ -92,6 +92,7 @@ public class SinglyLinkedList<T> implements List<T>{
     public int getLength() {
         return mLength;
     }
+
     public void append(T x){ //add element to end of list
         ListNode<T> newEnd = new ListNode<T>(x);
         mLength++;
