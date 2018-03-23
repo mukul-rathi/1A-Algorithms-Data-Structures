@@ -1,4 +1,4 @@
-package mukulrathi.datastructures.implementations;
+package mukulrathi.datastructures.implementations.queues;
 
 import mukulrathi.customexceptions.UnderflowException;
 import mukulrathi.datastructures.abstractdatatypes.Queue;
