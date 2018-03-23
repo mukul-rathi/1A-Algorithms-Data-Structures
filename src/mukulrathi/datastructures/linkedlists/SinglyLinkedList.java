@@ -1,7 +1,7 @@
-package mukulrathi.datastructures;
+package mukulrathi.datastructures.linkedlists;
 
-import mukulrathi.UnderflowException;
-import mukulrathi.datastructures.abstractdatatype.List;
+import mukulrathi.customexceptions.UnderflowException;
+import mukulrathi.datastructures.abstractdatatypes.List;
 
 /*
 This class is an example implementation of the List ADT using a singly linked list.

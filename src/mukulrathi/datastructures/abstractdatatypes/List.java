@@ -1,6 +1,6 @@
-package mukulrathi.datastructures.abstractdatatype;
+package mukulrathi.datastructures.abstractdatatypes;
 
-import mukulrathi.UnderflowException;
+import mukulrathi.customexceptions.UnderflowException;
 
 public interface List<T>{
 
