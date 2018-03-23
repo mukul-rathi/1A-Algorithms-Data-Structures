@@ -2,7 +2,7 @@ package mukulrathi.datastructures.abstractdatatypes;
 
 import mukulrathi.customexceptions.OutOfBoundsException;
 
-public interface Vector<T>{
+public interface Vector<T>{ //this abstracts the notion of an array
 
     //ranks are 0-indexed by convention
 

@@ -1,9 +1,13 @@
-package mukulrathi.datastructures.implementations;
+package mukulrathi.datastructures.implementations.stack;
 
 import mukulrathi.customexceptions.UnderflowException;
 import mukulrathi.datastructures.abstractdatatypes.Stack;
-
-public class ConcreteStack<T> implements Stack<T> {
+/*
+This class is an example implementation of the Stack ADT using a singly linked list.
+Compared to ArrayStack implementation, this has the downside of
+memory overhead of creating objects for each node
+ */
+public class LinkedListStack<T> implements Stack<T> {
     private StackNode<T> mTop;
 
     private class StackNode<T>{
@@ -15,11 +19,11 @@ public class ConcreteStack<T> implements Stack<T> {
         }
     }
 
-    public ConcreteStack(){ //create empty stack
+    public LinkedListStack(){ //create empty stack
 
     }
 
-    public ConcreteStack(T x){
+    public LinkedListStack(T x){
         mTop = new StackNode<T>(x);
     }
 

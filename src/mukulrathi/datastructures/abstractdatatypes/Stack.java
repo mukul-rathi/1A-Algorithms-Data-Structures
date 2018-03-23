@@ -1,8 +1,13 @@
 package mukulrathi.datastructures.abstractdatatypes;
 
 import mukulrathi.customexceptions.UnderflowException;
+/*
+    This is a LIFO (Last-In-First-Out) ADT.
+ */
+
 
 public interface Stack<T> {
+
     boolean isEmpty(); //returns true if stack is empty, false otherwise
 
     void push(T x); //add element x to top of stack
