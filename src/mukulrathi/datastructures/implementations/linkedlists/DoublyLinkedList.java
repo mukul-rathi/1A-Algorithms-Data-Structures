@@ -1,4 +1,4 @@
-package mukulrathi.datastructures.linkedlists;
+package mukulrathi.datastructures.implementations.linkedlists;
 
 import mukulrathi.customexceptions.OutOfBoundsException;
 import mukulrathi.datastructures.abstractdatatypes.Vector;

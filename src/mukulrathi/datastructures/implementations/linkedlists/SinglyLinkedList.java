@@ -1,4 +1,4 @@
-package mukulrathi.datastructures.linkedlists;
+package mukulrathi.datastructures.implementations.linkedlists;
 
 import mukulrathi.customexceptions.UnderflowException;
 import mukulrathi.datastructures.abstractdatatypes.List;
