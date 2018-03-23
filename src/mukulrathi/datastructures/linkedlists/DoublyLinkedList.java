@@ -3,6 +3,11 @@ package mukulrathi.datastructures.linkedlists;
 import mukulrathi.customexceptions.OutOfBoundsException;
 import mukulrathi.datastructures.abstractdatatypes.Vector;
 
+/*
+This class is an example implementation of the Vector ADT using a doubly linked list. Another potential implementation
+is using an Array.
+ */
+
 public class DoublyLinkedList<T> implements Vector<T>{
     private int mLength;
     private ListNode<T> mHead;
