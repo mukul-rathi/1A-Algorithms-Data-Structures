@@ -6,7 +6,7 @@ package mukulrathi.datastructures.abstractdatatypes.sets;
 public interface StaticSet<K> {
     boolean isEmpty(); //true if empty set, false otherwise
 
-    boolean hasKey(K x); //return true if set contains key x
+    boolean hasKey(K k); //return true if set contains key k
 
     K chooseAny(); //Precondition: isEmpty()==false
                     //returns any arbitrary key from set

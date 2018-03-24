@@ -13,9 +13,9 @@ public interface OrderedSet<K extends Comparable<K>> extends DynamicSet<K> {
     K max() throws UnderflowException;// Precondition: isEmpty() ==false
     // returns max element in set
 
-    K predecessor(K x) throws KeyNotFoundException; // Precondition: hasKey(k) ==true, min()!=x
-    // returns largest key in set that is smaller than x;
+    K predecessor(K k) throws KeyNotFoundException; // Precondition: hasKey(k) ==true, min()!=k
+    // returns largest key in set that is smaller than k;
 
-    K successor(K x); // Precondition: hasKey(k) ==true, max()!=x
-    // returns smallest key in set that is greater than x;
+    K successor(K k) throws KeyNotFoundException; // Precondition: hasKey(k) ==true, max()!=k
+    // returns smallest key in set that is greater than k;
 }
