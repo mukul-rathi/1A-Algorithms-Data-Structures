@@ -61,7 +61,7 @@ public class LinkedListDeque<T> implements Deque<T> {
     public T getFront() throws UnderflowException {
         if(isEmpty()) throw new UnderflowException();
         T returnVal = mFront.value;
-        ;
+
         if(mSize==1){
             mFront = null;
             mRear = null;

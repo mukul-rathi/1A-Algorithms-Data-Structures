@@ -9,19 +9,20 @@ import mukulrathi.datastructures.abstractdatatypes.sets.StaticSet;
 This class is an example implementation of the Ordered Set ADT using a binary search tree.
  */
 
-public class BinarySearchTree<T> implements OrderedSet<T> {
-    private TreeNode<T> mRoot;
+public class BinarySearchTree<K extends Comparable<K>> implements OrderedSet<K>{
+    //we use bounded generic type (T extends__) since we want to compare ordering of key
+    private TreeNode<K> mRoot;
 
     //each node in the tree contains a key (by which it is ordered)
     //and pointers to its parent and left and right children.
     //Note BST property : key(leftChild)<=key(node)<=key(rightChild)
-    private class TreeNode<T>{
-        public T key;
-        public TreeNode<T> parent;
-        public TreeNode<T> leftChild;
-        public TreeNode<T> rightChild;
+    private class TreeNode<K>{
+        public K key;
+        public TreeNode<K> parent;
+        public TreeNode<K> leftChild;
+        public TreeNode<K> rightChild;
 
-        public TreeNode(T x){
+        public TreeNode(K x){
             key = x;
         }
     }
@@ -30,26 +31,26 @@ public class BinarySearchTree<T> implements OrderedSet<T> {
 
     }
 
-    public BinarySearchTree(T x){ //create tree with a root node
-        mRoot = new TreeNode<T>(x);
+    public BinarySearchTree(K x){ //create tree with a root node
+        mRoot = new TreeNode<K>(x);
     }
 
     //create a shallow copy of the tree with given node as root
-    public BinarySearchTree(TreeNode<T> root){
+    public BinarySearchTree(TreeNode<K> root){
         mRoot = root;
     }
     //internal method to return the TreeNode with the particular key
     //useful since we can then traverse the tree from that point
-    private TreeNode<T> nodeWithKey(T k) throws KeyNotFoundException {
+    private TreeNode<K> nodeWithKey(K k) throws KeyNotFoundException {
 
-        TreeNode<T> currentNode = mRoot;
+        TreeNode<K> currentNode = mRoot;
         while(currentNode!=null) {
             //compare with the current node's key
-            if(k==currentNode.key){
+            if(k.compareTo(currentNode.key)==0){
                 return currentNode;
             }
 
-            else if(k < currentNode.key){ //go down left subtree
+            else if(k.compareTo(currentNode.key)<0){ //go down left subtree
                 currentNode=currentNode.leftChild;
             }
             else{ //k must be in right subtree if it is in tree
@@ -63,9 +64,9 @@ public class BinarySearchTree<T> implements OrderedSet<T> {
     }
 
     @Override
-    public T min() throws UnderflowException {
+    public K min() throws UnderflowException {
         if (isEmpty()) throw new UnderflowException(); //no min since tree is empty
-        TreeNode<T> currentNode = mRoot;
+        TreeNode<K> currentNode = mRoot;
         //keep following left child until we reach leaf
         while(currentNode.leftChild!=null){
             currentNode=currentNode.leftChild;
@@ -74,9 +75,9 @@ public class BinarySearchTree<T> implements OrderedSet<T> {
     }
 
     @Override
-    public T max() throws UnderflowException {
+    public K max() throws UnderflowException {
         if (isEmpty()) throw new UnderflowException(); //no max since tree is empty
-        TreeNode<T> currentNode = mRoot;
+        TreeNode<K> currentNode = mRoot;
         //keep following right child until we reach leaf
         while(currentNode.rightChild!=null){
             currentNode=currentNode.rightChild;
@@ -85,44 +86,43 @@ public class BinarySearchTree<T> implements OrderedSet<T> {
     }
 
     @Override
-    public T predecessor(T x) throws KeyNotFoundException {
-
-
+    public K predecessor(K x) throws KeyNotFoundException {
+        return null;
 
     }
 
     @Override
-    public T successor(T x) {
+    public K successor(K x) {
         return null;
     }
 
     @Override
-    public void insert(T x) {
+    public void insert(K x) {
 
     }
 
     @Override
-    public void delete(T x) {
+    public void delete(K x) {
 
     }
 
     @Override
-    public DynamicSet<T> union(StaticSet<T> s) {
+    public DynamicSet<K> union(StaticSet<K> s) {
         return null;
     }
 
     @Override
-    public DynamicSet<T> intersection(StaticSet<T> s) {
+    public DynamicSet<K> intersection(StaticSet<K> s) {
         return null;
     }
 
     @Override
-    public DynamicSet<T> difference(StaticSet<T> s) {
+    public DynamicSet<K> difference(StaticSet<K> s) {
         return null;
     }
 
     @Override
-    public boolean subset(StaticSet<T> s) {
+    public boolean subset(StaticSet<K> s) {
         return false;
     }
 
@@ -132,12 +132,12 @@ public class BinarySearchTree<T> implements OrderedSet<T> {
     }
 
     @Override
-    public boolean hasKey(T x) {
+    public boolean hasKey(K x) {
         return false;
     }
 
     @Override
-    public T chooseAny() {
+    public K chooseAny() {
         return null;
     }
 
