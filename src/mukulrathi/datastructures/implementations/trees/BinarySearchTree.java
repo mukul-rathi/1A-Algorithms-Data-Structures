@@ -2,9 +2,16 @@ package mukulrathi.datastructures.implementations.trees;
 
 import mukulrathi.customexceptions.KeyNotFoundException;
 import mukulrathi.customexceptions.UnderflowException;
+import mukulrathi.datastructures.abstractdatatypes.Stack;
 import mukulrathi.datastructures.abstractdatatypes.sets.DynamicSet;
 import mukulrathi.datastructures.abstractdatatypes.sets.OrderedSet;
 import mukulrathi.datastructures.abstractdatatypes.sets.StaticSet;
+import mukulrathi.datastructures.implementations.stack.ArrayStack;
+import mukulrathi.datastructures.implementations.stack.LinkedListStack;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /*
 This class is an example implementation of the Ordered Set ADT using a binary search tree.
  */
@@ -451,6 +458,29 @@ public class BinarySearchTree<K extends Comparable<K>> implements OrderedSet<K>{
         return numOfNodes;
     }
 
+    public List<K> inOrderTraversal(){
+        //visit left subtree first, then node, then right subtree
+        //Postorder: visit L then R then node itself
+        //Preorder: visit node then L then R
+        ArrayList<K> answer = new ArrayList<K>();
+        Stack<K> stack = new LinkedListStack<K>();
+        TreeNode<K> currentNode = mRoot;
+        while(currentNode!=null||!stack.isEmpty()) {
+            while (currentNode != null) {
+                stack.push(currentNode.key);
+                currentNode = currentNode.leftChild;
+            }
+            if(!stack.isEmpty()){
+                try {
+                    K val = stack.pop();
+                    answer.add(val);
+                } catch (UnderflowException e) { //won't happen because we know stack is not empty
+                    e.printStackTrace();
+                }
+                currentNode = currentNode.rightChild;
+            }
+        }
+        return answer;
 
-
+    }
 }
