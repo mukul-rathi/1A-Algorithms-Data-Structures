@@ -191,36 +191,213 @@ public class BinarySearchTree<K extends Comparable<K>> implements OrderedSet<K>{
 
     @Override
     public void insert(K k) {
+        TreeNode<K> currentNode = mRoot;
+        TreeNode<K> parentNode = null; //parent of current node
+        while(currentNode!=null){
+            if(k.compareTo(currentNode.key)==0){
+                return; // Case 1: key is already present, we don't need to insert it
+            }
+            else if(k.compareTo(currentNode.key)<0){ //k< current node key so go down left subtree
+                parentNode = currentNode;
+                currentNode = currentNode.leftChild;
+            }
+            else{ // k> current node key so go down right subtree
+                parentNode = currentNode;
+                currentNode = currentNode.rightChild;
+            }
+
+        }
+        //we've reached bottom of tree so insert as leaf
+        TreeNode<K> newNode = new TreeNode<K>(k);
+
+        if(parentNode==null){ // Case 2: tree is empty
+            mRoot = newNode;
+        }
+        //Case 3:we have a parent node so we update newNode as the parent node's left or right child, depending on key
+        else {
+            newNode.parent = parentNode;
+            if(k.compareTo(parentNode.key)<0){
+                parentNode.leftChild = newNode;
+
+            }
+            else{
+                parentNode.rightChild = newNode;
+
+            }
+        }
 
     }
 
     @Override
-    public void delete(K k) {
+    public void delete(K k) throws KeyNotFoundException {
+        TreeNode<K> currentNode = nodeWithKey(k); //this will throw KeyNotFoundException if k not in tree
+
+        //Case 1: if node has at most one subtree, we just shift this up
+        if(currentNode.leftChild==null){
+            //splice out node and update pointers
+            currentNode.rightChild.parent = currentNode.parent;
+
+            if(currentNode.parent.leftChild==currentNode){
+                currentNode.parent.leftChild= currentNode.rightChild;
+            }
+            else{
+                currentNode.parent.rightChild= currentNode.rightChild;
+
+            }
+        }
+        else if( currentNode.rightChild==null){
+            //splice out node and update pointers
+            currentNode.leftChild.parent = currentNode.parent;
+
+            if(currentNode.parent.leftChild==currentNode){
+                currentNode.parent.leftChild= currentNode.leftChild;
+            }
+            else{
+                currentNode.parent.rightChild= currentNode.leftChild;
+
+            }
+        }
+        //Case 2: node has both subtrees, so its successor lies in right subtree
+        //we swap node with its successor, then delete it
+        //For ease of implementation, we will do this by deleting successor from tree, then swapping it
+        //into the original node's position.
+
+
+        else{
+            TreeNode<K> succNode = nodeWithKey(successor(k));
+            //note successor has no left subtree so case 1 applies
+
+            succNode.rightChild.parent = currentNode.parent;
+
+            if(succNode.parent.leftChild==succNode){
+                succNode.parent.leftChild= succNode.rightChild;
+            }
+            else{
+                succNode.parent.rightChild= succNode.rightChild;
+
+            }
+
+            //next let us swap succNode into currentNode's position by updating pointers
+
+            //first the parent node
+            succNode.parent  = currentNode.parent;
+            if(currentNode.parent.leftChild==currentNode){
+                currentNode.parent.leftChild= succNode;
+            }
+            else{
+                currentNode.parent.rightChild= succNode;
+
+            }
+
+            //next, the children
+            succNode.leftChild = currentNode.leftChild;
+            currentNode.leftChild.parent = succNode;
+
+            succNode.rightChild= currentNode.rightChild;
+            currentNode.rightChild.parent = succNode;
+
+
+        }
+
+
+    }
+    @Override
+    public DynamicSet<K> union(DynamicSet<K> s) {
+        //go through s and remove an element and insert it into the underlying data-structure
+        while(!s.isEmpty()){
+            K sKey = null;
+            try {
+                sKey = s.chooseAny();
+                s.delete(sKey);
+
+            } catch (KeyNotFoundException e) { //this exception is not going to be thrown since
+                //s not empty so we must get an arbitrary key back, and we know that we can remove it
+                e.printStackTrace();
+            }
+            insert(sKey);
+        }
+        return (DynamicSet<K>) this;
+    }
+
+    @Override
+    public DynamicSet<K> intersection(DynamicSet<K> s) {
+        DynamicSet<K> result= new BinarySearchTree<K>();
+        while(!s.isEmpty()){
+            //remove a key from S each time
+            K sKey = null;
+            try {
+                sKey = s.chooseAny();
+                s.delete(sKey);
+
+            } catch (KeyNotFoundException e) { //this exception is not going to be thrown since
+                //s not empty so we must get an arbitrary key back, and we know that we can remove it
+                e.printStackTrace();
+            }
+            //if the key is also in this BST, it lies in the intersection
+            if(hasKey(sKey)) {
+                result.insert(sKey);
+            }
+        }
+
+        return result;
+
 
     }
 
     @Override
-    public DynamicSet<K> union(StaticSet<K> s) {
-        return null;
+    public DynamicSet<K> difference(DynamicSet<K> s) {
+        while(!s.isEmpty()){
+            //remove a key from S each time and check if in this BST - if so, remove it.
+            K sKey = null;
+            try {
+                sKey = s.chooseAny();
+                s.delete(sKey);
+
+            } catch (KeyNotFoundException e) { //this exception is not going to be thrown since
+                //s not empty so we must get an arbitrary key back, and we know that we can remove it
+                e.printStackTrace();
+            }
+            //if the key is also in this BST, it lies in the intersection
+            if(hasKey(sKey)) {
+                try {
+                    delete(sKey);
+                } catch (KeyNotFoundException e) {//this exception is not going to be thrown since we've checked
+                                                    //the key is present
+                    e.printStackTrace();
+                }
+            }
+        }
+        return (DynamicSet<K>) this;
+
+
+
     }
 
     @Override
-    public DynamicSet<K> intersection(StaticSet<K> s) {
-        return null;
-    }
+    public boolean subset(DynamicSet<K> s) {
+        while(!s.isEmpty()){
+            //remove a key from S each time
+            K sKey = null;
+            try {
+                sKey = s.chooseAny();
+                s.delete(sKey);
 
-    @Override
-    public DynamicSet<K> difference(StaticSet<K> s) {
-        return null;
-    }
+            } catch (KeyNotFoundException e) { //this exception is not going to be thrown since
+                //s not empty so we must get an arbitrary key back, and we know that we can remove it
+                e.printStackTrace();
+            }
+            //if the key from S is not in this BST, then S is not a subset of this BST
+            if(!hasKey(sKey)) {
+                return false;
+            }
+        }
 
-    @Override
-    public boolean subset(StaticSet<K> s) {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isEmpty() {
+
         return (mRoot==null);
     }
 
@@ -252,7 +429,8 @@ public class BinarySearchTree<K extends Comparable<K>> implements OrderedSet<K>{
     }
 
     @Override
-    public K chooseAny() {
+    public K chooseAny() throws KeyNotFoundException {
+        if (isEmpty()) throw new KeyNotFoundException();
         return mRoot.key; // return the root's key for simplicity's sake
 
     }
@@ -272,12 +450,6 @@ public class BinarySearchTree<K extends Comparable<K>> implements OrderedSet<K>{
         }
         return numOfNodes;
     }
-
-
-
-
-
-
 
 
 
