@@ -3,6 +3,10 @@ package mukulrathi.datastructures.implementations.queues;
 import mukulrathi.customexceptions.UnderflowException;
 import mukulrathi.datastructures.abstractdatatypes.Deque;
 
+/*
+This class is an example implementation of the Deque ADT using a doubly linked list.
+ */
+
 public class LinkedListDeque<T> implements Deque<T> {
     private int mSize;
     private QueueNode<T> mFront;

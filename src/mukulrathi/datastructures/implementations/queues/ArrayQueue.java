@@ -4,7 +4,9 @@ import mukulrathi.customexceptions.UnderflowException;
 import mukulrathi.datastructures.abstractdatatypes.Queue;
 
 import java.util.ArrayList;
-
+/*
+This class is an example implementation of the Queue ADT using an Array.
+ */
 public class ArrayQueue<T> implements Queue<T>{
     private ArrayList<T> mQueue;//NB using ArrayList as substitute for array, since arrays
                                 //don't work well with generics due to type erasure
