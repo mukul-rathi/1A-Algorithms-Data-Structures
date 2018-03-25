@@ -33,7 +33,7 @@ public class BinarySearchTreeTester {
                         System.out.println("Tree empty? : " + testBST.isEmpty());
                         break;
                 case "hasKey":
-                        val = input.nextInt();
+                        val = Integer.parseInt(operations[1]);
                         System.out.println("Key present? : " + testBST.hasKey(val));
                         break;
                 case "chooseAny":

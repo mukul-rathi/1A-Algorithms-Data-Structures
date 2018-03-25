@@ -242,30 +242,31 @@ public class BinarySearchTree<K extends Comparable<K>> implements OrderedSet<K>{
         TreeNode<K> currentNode = nodeWithKey(k); //this will throw KeyNotFoundException if k not in tree
 
         //Case 1: if node has at most one subtree, we just shift this up
-        if(currentNode.leftChild==null){
-            //splice out node and update pointers
-            currentNode.rightChild.parent = currentNode.parent;
+        if (currentNode.leftChild == null || currentNode.rightChild == null){
 
-            if(currentNode.parent.leftChild==currentNode){
-                currentNode.parent.leftChild= currentNode.rightChild;
-            }
-            else{
-                currentNode.parent.rightChild= currentNode.rightChild;
+            if (currentNode.leftChild == null) {
+                //splice out node and update pointers
+                currentNode.rightChild.parent = currentNode.parent;
 
-            }
-        }
-        else if( currentNode.rightChild==null){
-            //splice out node and update pointers
-            currentNode.leftChild.parent = currentNode.parent;
+                if (currentNode.parent.leftChild == currentNode) {
+                    currentNode.parent.leftChild = currentNode.rightChild;
+                } else {
+                    currentNode.parent.rightChild = currentNode.rightChild;
 
-            if(currentNode.parent.leftChild==currentNode){
-                currentNode.parent.leftChild= currentNode.leftChild;
+                }
             }
-            else{
-                currentNode.parent.rightChild= currentNode.leftChild;
+            else {
+                //splice out node and update pointers
+                currentNode.leftChild.parent = currentNode.parent;
 
+                if (currentNode.parent.leftChild == currentNode) {
+                    currentNode.parent.leftChild = currentNode.leftChild;
+                } else {
+                    currentNode.parent.rightChild = currentNode.leftChild;
+
+                }
             }
-        }
+    }
         //Case 2: node has both subtrees, so its successor lies in right subtree
         //we swap node with its successor, then delete it
         //For ease of implementation, we will do this by deleting successor from tree, then swapping it
@@ -275,8 +276,9 @@ public class BinarySearchTree<K extends Comparable<K>> implements OrderedSet<K>{
         else{
             TreeNode<K> succNode = nodeWithKey(successor(k));
             //note successor has no left subtree so case 1 applies
-
-            succNode.rightChild.parent = currentNode.parent;
+            if(succNode.rightChild!=null) { //check if right subtree present
+                succNode.rightChild.parent = currentNode.parent;
+            }
 
             if(succNode.parent.leftChild==succNode){
                 succNode.parent.leftChild= succNode.rightChild;
@@ -290,12 +292,17 @@ public class BinarySearchTree<K extends Comparable<K>> implements OrderedSet<K>{
 
             //first the parent node
             succNode.parent  = currentNode.parent;
-            if(currentNode.parent.leftChild==currentNode){
-                currentNode.parent.leftChild= succNode;
-            }
-            else{
-                currentNode.parent.rightChild= succNode;
 
+            if(currentNode==mRoot){
+                mRoot= succNode;
+            }
+            else { //i.e. if currentNode has a parent (i.e. not root)
+                if (currentNode.parent.leftChild == currentNode) {
+                    currentNode.parent.leftChild = succNode;
+                } else {
+                    currentNode.parent.rightChild = succNode;
+
+                }
             }
 
             //next, the children
