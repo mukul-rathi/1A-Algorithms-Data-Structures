@@ -5,8 +5,6 @@ import mukulrathi.customexceptions.UnderflowException;
 import mukulrathi.datastructures.abstractdatatypes.Stack;
 import mukulrathi.datastructures.abstractdatatypes.sets.DynamicSet;
 import mukulrathi.datastructures.abstractdatatypes.sets.OrderedSet;
-import mukulrathi.datastructures.abstractdatatypes.sets.StaticSet;
-import mukulrathi.datastructures.implementations.stack.ArrayStack;
 import mukulrathi.datastructures.implementations.stack.LinkedListStack;
 
 import java.util.ArrayList;
