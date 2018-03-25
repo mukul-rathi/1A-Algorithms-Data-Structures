@@ -485,11 +485,17 @@ public class BinarySearchTree<K extends Comparable<K>> implements OrderedSet<K>{
         return answer;
 
     }
+    private int depth(TreeNode<K> currentNode){
+        if(currentNode==null) return 0;
+        else {
+            return 1 + Math.max(depth(currentNode.leftChild),depth(currentNode.rightChild));
+        }
+    }
     /*
         This method modifies the list of nodes at each level - used for the toString methods
      */
     private void nodesByLevel(TreeNode<K> currentNode,int depth, int offset,ArrayList<ArrayList<TreeNode<K>>> listOfNodes, int maxDepth){
-        if (depth > maxDepth){ //greater than max depth of tree so cannot have any nodes here
+        if (depth >= maxDepth){ //greater than max depth of tree so cannot have any nodes here
             return;
         }
         listOfNodes.get(depth).set(offset,currentNode); //set the value of the node at the correct position in list
@@ -508,15 +514,21 @@ public class BinarySearchTree<K extends Comparable<K>> implements OrderedSet<K>{
     }
     @Override
     public String toString(){ //this prints out the BST level by level - which is useful for debugging purposes
-        ArrayList<ArrayList<TreeNode<K>>> listOfNodes = new ArrayList<ArrayList<TreeNode<K>>>();
-        int maxDepth = (int) Math.ceil(Math.log(size())/Math.log(2));
-        //initialise the list of nodes
-        for(int i=0; i<maxDepth;i++){
-            ArrayList<TreeNode<K>> nodeLevel = new ArrayList<TreeNode<K>>((int) Math.pow(2,i));
-            listOfNodes.add(nodeLevel);
-        }
-        nodesByLevel(mRoot,0,0,listOfNodes,maxDepth);
         String prettyPrint = "";
+        int maxDepth = depth(mRoot);
+       prettyPrint+= "Depth of tree: " + maxDepth + "\n";
+
+        //initialise the list of nodes - initially all null values
+        ArrayList<ArrayList<TreeNode<K>>> listOfNodes = new ArrayList<ArrayList<TreeNode<K>>>(maxDepth);
+        for(int i=0; i<maxDepth;i++){
+            ArrayList<TreeNode<K>> nodeLevel = new ArrayList<TreeNode<K>>();
+            for(int j=0; j< (int) Math.pow(2,i);j++){
+                nodeLevel.add(null);
+            }
+            listOfNodes.add(i,nodeLevel);
+        }
+
+        nodesByLevel(mRoot,0,0,listOfNodes,maxDepth);
         for (ArrayList<TreeNode<K>> nodeLevel : listOfNodes){
             for(TreeNode<K> node : nodeLevel){
                 prettyPrint+=" ";
