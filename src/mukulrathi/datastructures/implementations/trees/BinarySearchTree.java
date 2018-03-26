@@ -466,7 +466,23 @@ public class BinarySearchTree<K extends Comparable<K>> implements OrderedSet<K>{
         }
         return numOfNodes;
     }
+    /*
+    This implementation makes use of a stack for inorder traversal. O(n) space for unbalanced BST
+    There are a couple of other ways of doing this:
+        -> recursion (use call stack implicitly) i.e
+                traverse(node):
+                    traverse(Leftchild)
+                    print(node)
+                    traverse(RightChild)
 
+       -> threaded inorder traversal:
+            (just follow the successor - thread allows for some pre-computation)
+            if a node doesn't have a right child, point its thread (right child pointer) to the successor
+            then just start at min() node and at each step go to left-most child of right subtree or, if no
+            right subtree then follow thread.
+
+            Tradeoff: O(1) space but slower since have to traverse down tree
+     */
     public List<K> inOrderTraversal(){
         //visit left subtree first, then node, then right subtree
         //Postorder: visit L then R then node itself
