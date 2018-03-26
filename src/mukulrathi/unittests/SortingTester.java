@@ -1,4 +1,7 @@
-package mukulrathi.algorithms.sorting;
+package mukulrathi.unittests;
+
+import mukulrathi.algorithms.sorting.MergeSort;
+import mukulrathi.algorithms.sorting.SortingAlgo;
 
 import java.util.Scanner;
 
@@ -6,7 +9,7 @@ import java.util.Scanner;
 /*This is a test class with a main method that can be used to test each of the
   sorting algorithms - this uses the Strategy Java Design Pattern.
 */
-public class Tester {
+public class SortingTester {
     private static int[] test;
     private static SortingAlgo sorter;
 
