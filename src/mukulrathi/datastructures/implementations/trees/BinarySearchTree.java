@@ -21,7 +21,7 @@ public class BinarySearchTree<K extends Comparable<K>> implements OrderedSet<K>{
     //each node in the tree contains a key (by which it is ordered)
     //and pointers to its parent and left and right children.
     //Note BST property : key(leftChild)<=key(node)<=key(rightChild)
-    private class TreeNode<K>{
+    protected class TreeNode<K>{
         public K key;
         public TreeNode<K> parent;
         public TreeNode<K> leftChild;
