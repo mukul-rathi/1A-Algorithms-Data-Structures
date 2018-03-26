@@ -10,7 +10,7 @@ public class BinarySearchTreeTester {
 
 
     public static void main(String[] args){
-        BinarySearchTree<Integer> testBST = new BinarySearchTree<Integer>();
+        BinarySearchTree<Integer,Integer> testBST = new BinarySearchTree<Integer,Integer>();
         Scanner input = new Scanner(System.in);
         System.out.println("Test the BST with integers!");
         System.out.println();

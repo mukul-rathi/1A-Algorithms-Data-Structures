@@ -14,45 +14,63 @@ import java.util.List;
 This class is an example implementation of the Ordered Set ADT using a binary search tree.
  */
 
-public class BinarySearchTree<K extends Comparable<K>> implements OrderedSet<K>{
+public class BinarySearchTree<K extends Comparable<K>,V> implements OrderedSet<K>{
     //we use bounded generic type (K extends__) since we want to compare ordering of key
-    private TreeNode<K> mRoot;
+    protected TreeNode<K,V> mRoot;
 
-    //each node in the tree contains a key (by which it is ordered)
-    //and pointers to its parent and left and right children.
-    //Note BST property : key(leftChild)<=key(node)<=key(rightChild)
-    protected class TreeNode<K>{
+    /*
+    each node in the tree contains a key (by which it is ordered)
+    and pointers to its parent and left and right children.
+
+    NB: we also include a value = null for all nodes - this is for compatibility reasons:
+    so any classes that inherit BinarySearchTree can be used as a Dictionary rather than just a Set.
+
+    Note BST property : key(leftChild)<=key(node)<=key(rightChild)
+     */
+
+    protected class TreeNode<K,V>{
         public K key;
-        public TreeNode<K> parent;
-        public TreeNode<K> leftChild;
-        public TreeNode<K> rightChild;
+        public V value = null;
+        public TreeNode<K,V> parent;
+        public TreeNode<K,V> leftChild;
+        public TreeNode<K,V> rightChild;
 
         public TreeNode(K k){
             key = k;
         }
         @Override
         public String toString(){ //used to print out node
-            return "("+key+")";
+            if(value==null){
+                return "(" +key+")";
+            }
+            else {
+                return "(K: " + key + " V: " + value + ")";
+            }
         }
     }
+
+
+
+    //CONSTRUCTORS
 
     public BinarySearchTree(){ //create empty tree
 
     }
 
     public BinarySearchTree(K k){ //create tree with a root node
-        mRoot = new TreeNode<K>(k);
+        mRoot = new TreeNode<K,V>(k);
     }
 
     //create a shallow copy of the tree with given node as root
-    public BinarySearchTree(TreeNode<K> root){
+    public BinarySearchTree(TreeNode<K,V> root){
         mRoot = root;
     }
+
     //internal method to return the TreeNode with the particular key
     //useful since we can then traverse the tree from that point
-    private TreeNode<K> nodeWithKey(K k) throws KeyNotFoundException {
+    private TreeNode<K,V> nodeWithKey(K k) throws KeyNotFoundException {
 
-        TreeNode<K> currentNode = mRoot;
+        TreeNode<K,V> currentNode = mRoot;
         while(currentNode!=null) {
             //compare with the current node's key
             if(k.compareTo(currentNode.key)==0){
@@ -72,21 +90,26 @@ public class BinarySearchTree<K extends Comparable<K>> implements OrderedSet<K>{
         throw new KeyNotFoundException();
     }
 
+
+    /*
+    The following methods implement the Ordered Set ADT, hence only returning a key
+
+     */
+
     @Override
     public K min() throws UnderflowException {
         if (isEmpty()) throw new UnderflowException(); //no min since tree is empty
-        TreeNode<K> currentNode = mRoot;
+        TreeNode<K,V> currentNode = mRoot;
         //keep following left child until we reach leaf
         while(currentNode.leftChild!=null){
             currentNode=currentNode.leftChild;
         }
         return currentNode.key;
     }
-
     @Override
     public K max() throws UnderflowException {
         if (isEmpty()) throw new UnderflowException(); //no max since tree is empty
-        TreeNode<K> currentNode = mRoot;
+        TreeNode<K,V> currentNode = mRoot;
         //keep following right child until we reach leaf
         while(currentNode.rightChild!=null){
             currentNode=currentNode.rightChild;
@@ -97,7 +120,7 @@ public class BinarySearchTree<K extends Comparable<K>> implements OrderedSet<K>{
     @Override
     public K predecessor(K k) throws KeyNotFoundException {
 
-        TreeNode<K> currentNode = nodeWithKey(k); //this will throw KeyNotFoundException if k
+        TreeNode<K,V> currentNode = nodeWithKey(k); //this will throw KeyNotFoundException if k
                                                 // not in tree.
 
         try {
@@ -119,7 +142,7 @@ public class BinarySearchTree<K extends Comparable<K>> implements OrderedSet<K>{
         // element of left subtree
         if(currentNode.leftChild!=null){
             try {
-                predK= (new BinarySearchTree<K>(currentNode.leftChild)).max();
+                predK= (new BinarySearchTree<K,V>(currentNode.leftChild)).max();
             } catch (UnderflowException e) { //this is not going to happen because
                 //we know currentNode.leftChild!=null, but need to handle it anyway.
                 e.printStackTrace();
@@ -150,7 +173,7 @@ public class BinarySearchTree<K extends Comparable<K>> implements OrderedSet<K>{
         //this is the mirror image of predecessor
 
 
-        TreeNode<K> currentNode = nodeWithKey(k); //this will throw KeyNotFoundException if k
+        TreeNode<K,V> currentNode = nodeWithKey(k); //this will throw KeyNotFoundException if k
         // not in tree.
 
         try {
@@ -172,7 +195,7 @@ public class BinarySearchTree<K extends Comparable<K>> implements OrderedSet<K>{
         // element of right subtree
         if(currentNode.rightChild!=null){
             try {
-                succK= (new BinarySearchTree<K>(currentNode.rightChild)).min();
+                succK= (new BinarySearchTree<K,V>(currentNode.rightChild)).min();
             } catch (UnderflowException e) { //this is not going to happen because
                 //we know currentNode.leftChild!=null, but need to handle it anyway.
                 e.printStackTrace();
@@ -200,8 +223,8 @@ public class BinarySearchTree<K extends Comparable<K>> implements OrderedSet<K>{
 
     @Override
     public void insert(K k) {
-        TreeNode<K> currentNode = mRoot;
-        TreeNode<K> parentNode = null; //parent of current node
+        TreeNode<K,V> currentNode = mRoot;
+        TreeNode<K,V> parentNode = null; //parent of current node
         while(currentNode!=null){
             if(k.compareTo(currentNode.key)==0){
                 return; // Case 1: key is already present, we don't need to insert it
@@ -217,7 +240,7 @@ public class BinarySearchTree<K extends Comparable<K>> implements OrderedSet<K>{
 
         }
         //we've reached bottom of tree so insert as leaf
-        TreeNode<K> newNode = new TreeNode<K>(k);
+        TreeNode<K,V> newNode = new TreeNode<K,V>(k);
 
         if(parentNode==null){ // Case 2: tree is empty
             mRoot = newNode;
@@ -237,9 +260,11 @@ public class BinarySearchTree<K extends Comparable<K>> implements OrderedSet<K>{
 
     }
 
+
+
     @Override
     public void delete(K k) throws KeyNotFoundException {
-        TreeNode<K> currentNode = nodeWithKey(k); //this will throw KeyNotFoundException if k not in tree
+        TreeNode<K,V> currentNode = nodeWithKey(k); //this will throw KeyNotFoundException if k not in tree
 
         //Case 1: if node has at most one subtree, we just shift this up
         if (currentNode.leftChild == null || currentNode.rightChild == null){
@@ -274,7 +299,7 @@ public class BinarySearchTree<K extends Comparable<K>> implements OrderedSet<K>{
 
 
         else{
-            TreeNode<K> succNode = nodeWithKey(successor(k));
+            TreeNode<K,V> succNode = nodeWithKey(successor(k));
             //note successor has no left subtree so case 1 applies
             if(succNode.rightChild!=null) { //check if right subtree present
                 succNode.rightChild.parent = currentNode.parent;
@@ -337,7 +362,7 @@ public class BinarySearchTree<K extends Comparable<K>> implements OrderedSet<K>{
 
     @Override
     public DynamicSet<K> intersection(DynamicSet<K> s) {
-        DynamicSet<K> result= new BinarySearchTree<K>();
+        DynamicSet<K> result= new BinarySearchTree<K,V>();
         while(!s.isEmpty()){
             //remove a key from S each time
             K sKey = null;
@@ -424,7 +449,7 @@ public class BinarySearchTree<K extends Comparable<K>> implements OrderedSet<K>{
         //Also a key not being present when checking is not an exceptional circumstance, so
         //we should not use exceptions as control flow.
 
-        TreeNode<K> currentNode = mRoot;
+        TreeNode<K,V> currentNode = mRoot;
         while(currentNode!=null) {
             //compare with the current node's key
             if(k.compareTo(currentNode.key)==0){
@@ -458,10 +483,10 @@ public class BinarySearchTree<K extends Comparable<K>> implements OrderedSet<K>{
             numOfNodes++; //count root node
             //recursively count the left and right subtrees if they exist
             if(mRoot.leftChild!=null){
-                numOfNodes+= (new BinarySearchTree<K>(mRoot.leftChild)).size();
+                numOfNodes+= (new BinarySearchTree<K,V>(mRoot.leftChild)).size();
             }
             if(mRoot.rightChild!=null){
-                numOfNodes+= (new BinarySearchTree<K>(mRoot.rightChild)).size();
+                numOfNodes+= (new BinarySearchTree<K,V>(mRoot.rightChild)).size();
             }
         }
         return numOfNodes;
@@ -489,7 +514,7 @@ public class BinarySearchTree<K extends Comparable<K>> implements OrderedSet<K>{
         //Preorder: visit node then L then R
         ArrayList<K> answer = new ArrayList<K>();
         Stack<K> stack = new LinkedListStack<K>();
-        TreeNode<K> currentNode = mRoot;
+        TreeNode<K,V> currentNode = mRoot;
         while(currentNode!=null||!stack.isEmpty()) {
             while (currentNode != null) {
                 stack.push(currentNode.key);
@@ -510,7 +535,7 @@ public class BinarySearchTree<K extends Comparable<K>> implements OrderedSet<K>{
     }
 
     //this method returns the depth of the tree
-    private int depth(TreeNode<K> currentNode){
+    private int depth(TreeNode<K,V> currentNode){
         if(currentNode==null) return 0;
         else {
             return 1 + Math.max(depth(currentNode.leftChild),depth(currentNode.rightChild));
@@ -522,7 +547,7 @@ public class BinarySearchTree<K extends Comparable<K>> implements OrderedSet<K>{
         This method modifies the list of nodes at each level - used for the toString method
         we pass in listOfNodes to prevent unnecessary copying, and maxDepth to prevent repeated computation
      */
-    private void nodesByLevel(TreeNode<K> currentNode,int depth, int offset,ArrayList<ArrayList<TreeNode<K>>> listOfNodes, int maxDepth){
+    private void nodesByLevel(TreeNode<K,V> currentNode,int depth, int offset,ArrayList<ArrayList<TreeNode<K,V>>> listOfNodes, int maxDepth){
         if (depth >= maxDepth){ //greater than max depth of tree so cannot have any nodes here
             return;
         }
@@ -547,9 +572,9 @@ public class BinarySearchTree<K extends Comparable<K>> implements OrderedSet<K>{
         prettyPrint+= "Depth of tree: " + maxDepth + "\n";
 
         //initialise the list of nodes - initially all null values
-        ArrayList<ArrayList<TreeNode<K>>> listOfNodes = new ArrayList<ArrayList<TreeNode<K>>>(maxDepth);
+        ArrayList<ArrayList<TreeNode<K,V>>> listOfNodes = new ArrayList<ArrayList<TreeNode<K,V>>>(maxDepth);
         for(int i=0; i<maxDepth;i++){
-            ArrayList<TreeNode<K>> nodeLevel = new ArrayList<TreeNode<K>>();
+            ArrayList<TreeNode<K,V>> nodeLevel = new ArrayList<TreeNode<K,V>>();
             for(int j=0; j< (int) Math.pow(2,i);j++){
                 nodeLevel.add(null);
             }
@@ -557,8 +582,8 @@ public class BinarySearchTree<K extends Comparable<K>> implements OrderedSet<K>{
         }
 
         nodesByLevel(mRoot,0,0,listOfNodes,maxDepth);
-        for (ArrayList<TreeNode<K>> nodeLevel : listOfNodes){
-            for(TreeNode<K> node : nodeLevel){
+        for (ArrayList<TreeNode<K,V>> nodeLevel : listOfNodes){
+            for(TreeNode<K,V> node : nodeLevel){
                 prettyPrint+=" ";
                 prettyPrint+= (node!=null) ? node : "-";
             }
