@@ -8,7 +8,7 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BinarySearchTree<K,
     private final static boolean BLACK = true;
 
 
-    private class RBTreeNode<K,V> extends TreeNode<K,V>{
+    private class RBTreeNode<K,V> extends TreeNode<K,V> {
         public boolean colour;
         // Reset
         private static final String printRESET = "\033[0m";  // Text Reset
@@ -25,21 +25,11 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BinarySearchTree<K,
 
         }
 
-        //this allows us to convert a standard TreeNode to an RBTreeNode
-        public RBTreeNode(TreeNode<K,V> tNode, V v){
-            super(tNode.key);
-            parent = tNode.parent;
-            leftChild = tNode.leftChild;
-            rightChild = tNode.rightChild;
-
-            value = v;
-            colour = RED;
-        }
 
         @Override
         public String toString(){ //used to print out node
-            String colourOfNode = (colour==RED)? printRED : printBLACK;
-            return colourOfNode + super.toString() + printRESET;
+            //String colourOfNode = (colour==RED)? printRED : printBLACK;
+            return "(K: " + key + " V: " + value + ")";
         }
     }
 
@@ -100,18 +90,49 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BinarySearchTree<K,
         }
     }
 
-
+    @Override
+    public void insert(K k){
+        insert(k, null);
+    }
 
     public void insert(K k, V v){
         //insertion is same as BST except we colour the inserted node red and fix any
         // red-black property violations afterwards
-        super.insert(k);
-        RBTreeNode<K,V> newNode = null;
-        try {
-            newNode = new RBTreeNode<K,V>(nodeWithKey(k),v);
-        } catch (KeyNotFoundException e) { //this exception will never be thrown because we know there's a
-                                            //node with that key (we inserted it!)
-            e.printStackTrace();
+        RBTreeNode<K,V> currentNode = (RBTreeNode<K, V>) mRoot;
+        RBTreeNode<K,V> parentNode = null; //parent of current node
+        while(currentNode!=null){
+            if(k.compareTo(currentNode.key)==0){
+                currentNode.value = v;
+                return;
+            }
+            else if(k.compareTo(currentNode.key)<0){ //k< current node key so go down left subtree
+                parentNode = currentNode;
+                currentNode = getLeftChild(currentNode);
+            }
+            else{ // k> current node key so go down right subtree
+                parentNode = currentNode;
+                currentNode = getRightChild(currentNode);
+            }
+
+        }
+        //we've reached bottom of tree so insert as leaf
+
+        RBTreeNode<K,V> newNode = new RBTreeNode<K,V>(k,v);
+
+        if(parentNode==null){ // Case 2: tree is empty
+            mRoot = newNode;
+        }
+        //Case 3: we have a parent node so we update newNode as the parent node's left or right child, depending on key
+        else {
+            newNode.parent = parentNode;
+            if(k.compareTo(parentNode.key)<0){
+                parentNode.leftChild = newNode;
+
+            }
+            else{
+                parentNode.rightChild = newNode;
+
+            }
         }
 
         RBInsertFixUp(newNode);
@@ -125,7 +146,7 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BinarySearchTree<K,
         while(getColour(getParent(newNode))==RED) { //RB violation since two adjacent red nodes
 
 
-            if (getParent(newNode).equals(getLeftChild(getParent(getParent(newNode))))) {
+            if (getParent(newNode)==(getLeftChild(getParent(getParent(newNode))))) {
                 //parent is a left child
                 RBTreeNode<K, V> uncleNode = getRightChild(getParent(getParent(newNode)));
                 if (getColour(uncleNode) == RED) {
@@ -140,7 +161,7 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BinarySearchTree<K,
                 } else {
 
 
-                    if (newNode.equals(getRightChild(getParent(newNode)))) {
+                    if (newNode==(getRightChild(getParent(newNode)))) {
                         //CASE 2: newNode's uncle = black and newNode = right child
                         //we left rotate to convert to case 3
                         newNode = getParent(newNode);
@@ -171,7 +192,7 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BinarySearchTree<K,
                 } else {
 
 
-                    if (newNode.equals(getLeftChild(getParent(newNode)))) {
+                    if (newNode==(getLeftChild(getParent(newNode)))) {
                         //CASE 2: newNode's uncle = black and newNode = left child
                         //we right rotate to convert to case 3
                         newNode = getParent(newNode);
@@ -197,7 +218,7 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BinarySearchTree<K,
         setRightChild(currentNode,getLeftChild(currentRightChild));
 
         //make currentNode's parent the currentRightChild's parent
-        if(currentNode.equals(getLeftChild(getParent(currentNode)))){
+        if(currentNode == (getLeftChild(getParent(currentNode)))){
             setLeftChild(getParent(currentNode),currentRightChild);
         }
         else {
@@ -220,7 +241,7 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BinarySearchTree<K,
 
         //make currentNode's parent the currentLeftChild's parent
 
-        if(currentNode.equals(getLeftChild(getParent(currentNode)))){
+        if(currentNode==(getLeftChild(getParent(currentNode)))){
             setLeftChild(getParent(currentNode),currentLeftChild);
         }
         else {

@@ -30,7 +30,7 @@ public class BinarySearchTree<K extends Comparable<K>,V> implements OrderedSet<K
 
     protected class TreeNode<K,V>{
         public K key;
-        public V value = null;
+        public V value;
         public TreeNode<K,V> parent;
         public TreeNode<K,V> leftChild;
         public TreeNode<K,V> rightChild;
@@ -40,12 +40,7 @@ public class BinarySearchTree<K extends Comparable<K>,V> implements OrderedSet<K
         }
         @Override
         public String toString(){ //used to print out node
-            if(value==null){
-                return "(" +key+")";
-            }
-            else {
-                return "(K: " + key + " V: " + value + ")";
-            }
+            return "(" +key+")";
         }
     }
 
