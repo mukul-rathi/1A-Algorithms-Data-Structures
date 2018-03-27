@@ -68,7 +68,7 @@ public class BinarySearchTree<K extends Comparable<K>,V> implements OrderedSet<K
 
     //internal method to return the TreeNode with the particular key
     //useful since we can then traverse the tree from that point
-    private TreeNode<K,V> nodeWithKey(K k) throws KeyNotFoundException {
+    protected TreeNode<K,V> nodeWithKey(K k) throws KeyNotFoundException {
 
         TreeNode<K,V> currentNode = mRoot;
         while(currentNode!=null) {
@@ -260,7 +260,7 @@ public class BinarySearchTree<K extends Comparable<K>,V> implements OrderedSet<K
 
     }
 
-
+    
 
     @Override
     public void delete(K k) throws KeyNotFoundException {
@@ -271,14 +271,16 @@ public class BinarySearchTree<K extends Comparable<K>,V> implements OrderedSet<K
 
             if (currentNode.leftChild == null) {
                 //splice out node and update pointers
-                currentNode.rightChild.parent = currentNode.parent;
-
+                if(currentNode.rightChild!=null) {
+                    currentNode.rightChild.parent = currentNode.parent;
+                }
                 if (currentNode.parent.leftChild == currentNode) {
                     currentNode.parent.leftChild = currentNode.rightChild;
                 } else {
                     currentNode.parent.rightChild = currentNode.rightChild;
 
                 }
+
             }
             else {
                 //splice out node and update pointers
@@ -302,7 +304,7 @@ public class BinarySearchTree<K extends Comparable<K>,V> implements OrderedSet<K
             TreeNode<K,V> succNode = nodeWithKey(successor(k));
             //note successor has no left subtree so case 1 applies
             if(succNode.rightChild!=null) { //check if right subtree present
-                succNode.rightChild.parent = currentNode.parent;
+                succNode.rightChild.parent = succNode.parent;
             }
 
             if(succNode.parent.leftChild==succNode){
@@ -357,7 +359,7 @@ public class BinarySearchTree<K extends Comparable<K>,V> implements OrderedSet<K
             }
             insert(sKey);
         }
-        return (DynamicSet<K>) this;
+        return this;
     }
 
     @Override
@@ -408,7 +410,7 @@ public class BinarySearchTree<K extends Comparable<K>,V> implements OrderedSet<K
                 }
             }
         }
-        return (DynamicSet<K>) this;
+        return this;
 
 
 

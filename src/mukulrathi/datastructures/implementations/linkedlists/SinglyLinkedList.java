@@ -65,7 +65,7 @@ public class SinglyLinkedList<T> implements List<T>{
             tail.append(currentElem.nextElem.value);
             currentElem = currentElem.nextElem;
         }
-        return (List<T>) tail;
+        return tail;
 
     }
 

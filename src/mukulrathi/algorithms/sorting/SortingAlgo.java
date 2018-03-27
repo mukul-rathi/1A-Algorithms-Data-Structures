@@ -9,7 +9,7 @@ could be modified to work with other types)
 
 public interface SortingAlgo {
 
-    public int[] sort(int[] A);
+    int[] sort(int[] A);
 
 
 }
