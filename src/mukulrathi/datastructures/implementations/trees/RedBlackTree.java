@@ -70,14 +70,15 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BinarySearchTree<K,
     }
     private void setParent(RBTreeNode<K,V> node,RBTreeNode<K,V> parent){
         if(node!=null){
+            if(node==mRoot){ //corner case node was mRoot
+                mRoot = parent;
+            }
             node.parent = parent;
             //deal with corner case of node now being root
             if(parent==null){
                 mRoot =node;
             }
-            else if(node==null){
-                mRoot = parent;
-            }
+
         }
     }
     private void setLeftChild(RBTreeNode<K,V> node,RBTreeNode<K,V> leftChild){
@@ -279,6 +280,7 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BinarySearchTree<K,
 
 
         RBTreeNode<K,V> deleteNode = (RBTreeNode<K, V>) nodeWithKey(k);
+
         //during deletion one of the nodes will get removed, leaving a gap
         //in the tree that needs to be replaced. This is either the current node (in case 1) or the successor node
         // since it is swapped with the deletedNode ie. its position in the tree will be empty since it has moved to
@@ -286,6 +288,10 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BinarySearchTree<K,
         // To ensure red-black properties still hold we need to keep track of its original colour.
         boolean origColour = getColour(deleteNode);
         RBTreeNode<K, V> replaceNode; //node that shifts into the position of the gap in tree.
+
+
+        //this keeps track of the parent of the position we want the new node to move into
+        RBTreeNode<K, V> parentReplaceNode = getParent(deleteNode);
 
         //Case 1: if node has at most one subtree, we just shift this up
 
@@ -317,22 +323,59 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BinarySearchTree<K,
             origColour = getColour(succNode);
             replaceNode = getRightChild(succNode); //since case 1 the right subtree shifts up one to fill hole
 
-            shiftUpNode(succNode,replaceNode);
+            if(deleteNode==getParent(succNode)){
+                //if deleteNode == parent(succnode) we have:
+                /*
+                    (deleteNode)
+                    /        \
+                  (X)       (succNode)
+                                \
+                                (replaceNode)
+                 which goes to
+                    (succNode)
+                    /        \
+                  (X)       (replaceNode)
+
+                  i.e. no shifting needed,
+                  */
+                parentReplaceNode = succNode;
+            } else{
+                /* we only need subtree shifting if
+                         (deleteNode)
+                                \
+                                (X)
+                                /
+                               /
+                              ...
+                             /
+                         (succNode)   -this hole will need shifting
+                                \
+                                (replaceNode)
+                 which would go to
+                         (succNode)
+                                \
+                                (X)
+                                /
+                               /
+                              ...
+                             /
+                         (replaceNode) i.e. replaceNode shift up
+
+                 */
+                shiftUpNode(succNode, replaceNode);
+                //update right child to X
+                setRightChild(succNode,getRightChild(deleteNode));
+
+
+            }
 
             //next let us swap succNode into currentNode's position by updating pointers
 
-            //first the parent node
+            //parent pointer updated:
+            shiftUpNode(deleteNode,succNode);
 
-                if (getLeftChild(getParent(deleteNode)) == deleteNode) {
-                    setLeftChild(getParent(deleteNode),succNode);
-                } else {
-                    setRightChild(getParent(deleteNode),succNode);
-                }
-
-
-            //next, the children
-            setLeftChild(succNode, getLeftChild(succNode));
-            setRightChild(succNode, getRightChild(succNode));
+            //next update left child:
+                setLeftChild(succNode,getLeftChild(succNode));
             setColour(succNode,getColour(deleteNode));
 
 
@@ -347,12 +390,13 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BinarySearchTree<K,
         node may be black.
         */
         if(origColour==BLACK){
-            RBDeleteFixUp(replaceNode);
+            RBDeleteFixUp(replaceNode,parentReplaceNode); //moveNode passed in as param to deal with special replaceNode = null
+            //since we still want to keep track of replaceNode's Parent
         }
 
     }
 
-    private void RBDeleteFixUp(RBTreeNode<K, V> replaceNode) {
+    private void RBDeleteFixUp(RBTreeNode<K, V> replaceNode,RBTreeNode<K, V> parentReplaceNode) {
         /*
             If the replacement node was initially red, then we can skip the while loop and just compensate by making it
             black.
@@ -362,18 +406,19 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BinarySearchTree<K,
             However, if the node was black to begin with then we can't add an extra-black -so we need to do a fix-up in
             the while loop.
          */
+
         while(replaceNode!=mRoot && getColour(replaceNode)==BLACK) {
 
-            if (replaceNode == getLeftChild(getParent(replaceNode))) { //like with insert fix-up we consider case
+            if (replaceNode == getLeftChild(parentReplaceNode)) { //like with insert fix-up we consider case
                 //where the replaceNode is a left child, and then the other case is just a mirrored strategy.
 
-                RBTreeNode<K, V> siblingNode = getRightChild(getParent(replaceNode));
+                RBTreeNode<K, V> siblingNode = getRightChild(parentReplaceNode);
 
                 if (getColour(siblingNode) == RED) {
                     //CASE 1: x's sibling is red
                     setColour(siblingNode, BLACK);
-                    leftRotate(getParent(replaceNode));
-                    siblingNode = getRightChild(getParent(replaceNode)); //this must be black since it was initially
+                    leftRotate(parentReplaceNode);
+                    siblingNode = getRightChild(parentReplaceNode); //this must be black since it was initially
                     //a child of a red node.
                     //so we are converting case 1 -> case 2,3 or 4
 
@@ -388,7 +433,7 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BinarySearchTree<K,
                     //Now, both the subtree rooted at replaceNode and the subtree rooted at its sibling have one
                     //fewer black node. This is equiv. to replaceNode's parent subtree as a whole having one fewer
                     //black node - the same problem but moved up a level.
-                    replaceNode = getParent(replaceNode);
+                    replaceNode = parentReplaceNode;
 
                 } else { //at least one-of the children is red
                     if (getColour(getRightChild(siblingNode)) == BLACK) {
@@ -401,7 +446,7 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BinarySearchTree<K,
                         rightRotate(siblingNode);
                         //now, the old leftChild of sibling is replaceNode's new sibling since it moved up a level
                         // through the rightRotate
-                        siblingNode = getRightChild(getParent(replaceNode));
+                        siblingNode = getRightChild(parentReplaceNode);
                         //NB: the right child of siblingNode is red now, so we shift from
                         // case 3 -> case 4
                     }
@@ -410,8 +455,8 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BinarySearchTree<K,
 
                     //we swap the sibling and parent's colours and left-rotate, and also colour the rightChild of
                     //sibling black to maintain black heights after rotation.
-                    setColour(siblingNode, getColour(getParent(replaceNode)));
-                    leftRotate(getParent(replaceNode));
+                    setColour(siblingNode, getColour(parentReplaceNode));
+                    leftRotate(parentReplaceNode);
 
                     //NB before this replaceNode's subtree had black height (sibling) - 1 since one fewer black node.
                     //since sibling was initially black, its left child's subtree had black height(sibling) -1.
@@ -423,13 +468,13 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BinarySearchTree<K,
 
             } else { //like with insert fix-up this is just a mirrored strategy.
 
-                RBTreeNode<K, V> siblingNode = getLeftChild(getParent(replaceNode));
+                RBTreeNode<K, V> siblingNode = getLeftChild(parentReplaceNode);
 
                 if (getColour(siblingNode) == RED) {
                     //CASE 1: x's sibling is red
                     setColour(siblingNode, BLACK);
-                    rightRotate(getParent(replaceNode));
-                    siblingNode = getLeftChild(getParent(replaceNode)); //this must be black since it was initially
+                    rightRotate(parentReplaceNode);
+                    siblingNode = getLeftChild(parentReplaceNode); //this must be black since it was initially
                     //a child of a red node.
                     //so we are converting case 1 -> case 2,3 or 4
 
@@ -444,7 +489,7 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BinarySearchTree<K,
                     //Now, both the subtree rooted at replaceNode and the subtree rooted at its sibling have one
                     //fewer black node. This is equiv. to replaceNode's parent subtree as a whole having one fewer
                     //black node - the same problem but moved up a level.
-                    replaceNode = getParent(replaceNode);
+                    replaceNode = parentReplaceNode;
 
                 } else { //at least one-of the children is red
                     if (getColour(getLeftChild(siblingNode)) == BLACK) {
@@ -457,7 +502,7 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BinarySearchTree<K,
                         leftRotate(siblingNode);
                         //now, the old rightChild of sibling is replaceNode's new sibling since it moved up a level
                         // through the rightRotate
-                        siblingNode = getLeftChild(getParent(replaceNode));
+                        siblingNode = getLeftChild(parentReplaceNode);
                         //NB: the left child of siblingNode is red now, so we shift from
                         // case 3 -> case 4
                     }
@@ -466,8 +511,8 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BinarySearchTree<K,
 
                     //we swap the sibling and parent's colours and right-rotate, and also colour the leftChild of
                     //sibling black to maintain black heights after rotation.
-                    setColour(siblingNode, getColour(getParent(replaceNode)));
-                    rightRotate(getParent(replaceNode));
+                    setColour(siblingNode, getColour(parentReplaceNode));
+                    rightRotate(parentReplaceNode);
                     //NB before this replaceNode's subtree had black height (sibling) - 1 since one fewer black node.
                     //since sibling was initially black, its left child's subtree had black height(sibling) -1.
                     //this left child becomes replaceNode's new sibling due to right-rotates and since it has
