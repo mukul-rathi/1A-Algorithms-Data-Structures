@@ -28,8 +28,8 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BinarySearchTree<K,
 
         @Override
         public String toString(){ //used to print out node
-            //String colourOfNode = (colour==RED)? printRED : printBLACK;
-            return "(K: " + key + " V: " + value + ")";
+            String colourOfNode = (colour==RED)? "RED": "BLACK";
+            return "(K: " + key + " V: " + value +" "+colourOfNode+")";
         }
     }
 
@@ -71,9 +71,12 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BinarySearchTree<K,
     private void setParent(RBTreeNode<K,V> node,RBTreeNode<K,V> parent){
         if(node!=null){
             node.parent = parent;
-            //deal with corner case of if node is now root
+            //deal with corner case of node now being root
             if(parent==null){
                 mRoot =node;
+            }
+            else if(node==null){
+                mRoot = parent;
             }
         }
     }
@@ -88,6 +91,19 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BinarySearchTree<K,
             node.rightChild = rightChild;
             setParent(rightChild,node);
         }
+    }
+
+    private void shiftUpNode(RBTreeNode<K,V> oldNode,RBTreeNode<K,V> child){
+        if(getParent(oldNode)==null){
+            mRoot=child;
+        }
+        else if (getLeftChild(getParent(oldNode)) == oldNode) {
+            setLeftChild(getParent(oldNode),child);
+        } else {
+            setRightChild(getParent(oldNode),child);
+
+        }
+
     }
 
     @Override
@@ -124,14 +140,13 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BinarySearchTree<K,
         }
         //Case 3: we have a parent node so we update newNode as the parent node's left or right child, depending on key
         else {
-            newNode.parent = parentNode;
+            setParent(newNode,parentNode);
             if(k.compareTo(parentNode.key)<0){
-                parentNode.leftChild = newNode;
+                setLeftChild(parentNode,newNode);
 
             }
             else{
-                parentNode.rightChild = newNode;
-
+                setRightChild(parentNode,newNode);
             }
         }
 
@@ -145,7 +160,6 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BinarySearchTree<K,
     private void RBInsertFixUp(RBTreeNode<K, V> newNode) {
         while(getColour(getParent(newNode))==RED) { //RB violation since two adjacent red nodes
 
-
             if (getParent(newNode)==(getLeftChild(getParent(getParent(newNode))))) {
                 //parent is a left child
                 RBTreeNode<K, V> uncleNode = getRightChild(getParent(getParent(newNode)));
@@ -158,8 +172,9 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BinarySearchTree<K,
                     setColour(uncleNode, BLACK);
                     setColour(getParent(getParent(newNode)), RED);
                     newNode = getParent(getParent(newNode));
-                } else {
-
+                }
+                else {
+                    //newNode's uncle is black
 
                     if (newNode==(getRightChild(getParent(newNode)))) {
                         //CASE 2: newNode's uncle = black and newNode = right child
@@ -209,6 +224,7 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BinarySearchTree<K,
                 }
 
             }
+            setColour((RBTreeNode<K, V>) mRoot,BLACK);
         }
     //Pre-condition: current node has a right subtree
     private void leftRotate(RBTreeNode<K, V> currentNode) {
@@ -268,34 +284,24 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BinarySearchTree<K,
         // since it is swapped with the deletedNode ie. its position in the tree will be empty since it has moved to
         //fill the deletedNode's position
         // To ensure red-black properties still hold we need to keep track of its original colour.
-        boolean origColour = deleteNode.colour;
+        boolean origColour = getColour(deleteNode);
         RBTreeNode<K, V> replaceNode; //node that shifts into the position of the gap in tree.
 
         //Case 1: if node has at most one subtree, we just shift this up
 
-        if (deleteNode.leftChild == null || deleteNode.rightChild == null){
+        if (getLeftChild(deleteNode) == null || getRightChild(deleteNode) == null){
 
-            if (deleteNode.leftChild == null) {
-                //set right subtree's parent as the current node's parent
+            if (getLeftChild(deleteNode) == null) {
+                //we are shifting up right subtree
                 replaceNode = getRightChild(deleteNode); //since it is being shifted up
-                if (deleteNode.parent.leftChild == deleteNode) {
-                    setLeftChild(getParent(deleteNode),getRightChild(deleteNode));
-                } else {
-                    setRightChild(getParent(deleteNode),getRightChild(deleteNode));
-
-                }
-
             }
             else {
-                //set left subtree's parent as the current node's parent
+                //we are shifting up left subtree
                 replaceNode = getLeftChild(deleteNode);
-                if (deleteNode.parent.leftChild == deleteNode) {
-                    setLeftChild(getParent(deleteNode),getLeftChild(deleteNode));
-                } else {
-                    setRightChild(getParent(deleteNode),getLeftChild(deleteNode));
 
-                }
             }
+            shiftUpNode(deleteNode,replaceNode);
+
         }
         //Case 2: node has both subtrees, so its successor lies in right subtree
         //we swap node with its successor, then delete it
@@ -308,25 +314,19 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BinarySearchTree<K,
             //note successor has no left subtree so case 1 applies
 
             //successor node is the node that will leave gap so we need to know its colour
-            origColour = succNode.colour;
+            origColour = getColour(succNode);
             replaceNode = getRightChild(succNode); //since case 1 the right subtree shifts up one to fill hole
 
-            if (succNode.parent.leftChild == succNode) {
-                setLeftChild(getParent(succNode),getRightChild(succNode));
-            } else {
-                setRightChild(getParent(succNode),getRightChild(succNode));
-
-            }
+            shiftUpNode(succNode,replaceNode);
 
             //next let us swap succNode into currentNode's position by updating pointers
 
             //first the parent node
 
-                if (deleteNode.parent.leftChild == deleteNode) {
+                if (getLeftChild(getParent(deleteNode)) == deleteNode) {
                     setLeftChild(getParent(deleteNode),succNode);
                 } else {
                     setRightChild(getParent(deleteNode),succNode);
-
                 }
 
 
