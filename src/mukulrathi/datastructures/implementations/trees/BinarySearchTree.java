@@ -533,9 +533,11 @@ public class BinarySearchTree<K extends Comparable<K>,V> implements OrderedSet<K
 
     //this method returns the depth of the tree
     private int depth(TreeNode<K,V> currentNode){
-        if(currentNode==null) return 0;
+        if(currentNode==null) return 0; //since 1 node tree has depth 0
         else {
-            return 1 + Math.max(depth(currentNode.leftChild),depth(currentNode.rightChild));
+            int leftDepth = depth(currentNode.leftChild);
+            int rightDepth = depth(currentNode.rightChild);
+            return 1 + Math.max(leftDepth,rightDepth);
         }
     }
 
@@ -566,7 +568,7 @@ public class BinarySearchTree<K extends Comparable<K>,V> implements OrderedSet<K
     public String toString(){ //this prints out the BST level by level - which is useful for debugging purposes
         String prettyPrint = "";
         int maxDepth = depth(mRoot);
-        prettyPrint+= "Depth of tree: " + maxDepth + "\n";
+        prettyPrint+= "Depth of tree: " + (maxDepth-1) + "\n";
 
         //initialise the list of nodes - initially all null values
         ArrayList<ArrayList<TreeNode<K,V>>> listOfNodes = new ArrayList<ArrayList<TreeNode<K,V>>>(maxDepth);

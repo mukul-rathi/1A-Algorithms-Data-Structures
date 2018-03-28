@@ -235,11 +235,21 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BinarySearchTree<K,
         setRightChild(currentNode,getLeftChild(currentRightChild));
 
         //make currentNode's parent the currentRightChild's parent
-        if(currentNode == (getLeftChild(getParent(currentNode)))){
+        if(getParent(currentNode)==null){
+            mRoot = currentRightChild;
+            setParent(currentRightChild,null);
+
+        }
+        else if(currentNode == (getLeftChild(getParent(currentNode)))){
             setLeftChild(getParent(currentNode),currentRightChild);
         }
         else {
             setRightChild(getParent(currentNode),currentRightChild);
+        }
+        if(getParent(currentNode)==null){
+            mRoot = currentRightChild;
+            setParent(currentRightChild,null);
+
         }
 
         //make currentNode currentRightChild's new left child
@@ -258,12 +268,18 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BinarySearchTree<K,
 
         //make currentNode's parent the currentLeftChild's parent
 
-        if(currentNode==(getLeftChild(getParent(currentNode)))){
+        if(getParent(currentNode)==null){
+            mRoot = currentLeftChild;
+            setParent(currentLeftChild,null);
+
+        }
+        else if(currentNode==(getLeftChild(getParent(currentNode)))){
             setLeftChild(getParent(currentNode),currentLeftChild);
         }
         else {
             setRightChild(getParent(currentNode),currentLeftChild);
         }
+
 
         //make currentNode currentLeftChild's new right child
         setRightChild(currentLeftChild,currentNode);
@@ -375,11 +391,15 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BinarySearchTree<K,
             shiftUpNode(deleteNode,succNode);
 
             //next update left child:
-                setLeftChild(succNode,getLeftChild(succNode));
+            setLeftChild(succNode,getLeftChild(deleteNode));
             setColour(succNode,getColour(deleteNode));
 
 
 
+        }
+        if(replaceNode==null && deleteNode==mRoot){ //only one element left (this is a bit of a special case)
+            mRoot=null;
+            return;
         }
         /*origColour = original colour of the node that left gap in tree
         if it was red then no violation after removed since black heights remain same and we clearly aren't going
@@ -406,7 +426,6 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BinarySearchTree<K,
             However, if the node was black to begin with then we can't add an extra-black -so we need to do a fix-up in
             the while loop.
          */
-
         while(replaceNode!=mRoot && getColour(replaceNode)==BLACK) {
 
             if (replaceNode == getLeftChild(parentReplaceNode)) { //like with insert fix-up we consider case
@@ -434,6 +453,7 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BinarySearchTree<K,
                     //fewer black node. This is equiv. to replaceNode's parent subtree as a whole having one fewer
                     //black node - the same problem but moved up a level.
                     replaceNode = parentReplaceNode;
+                    parentReplaceNode = getParent(parentReplaceNode);
 
                 } else { //at least one-of the children is red
                     if (getColour(getRightChild(siblingNode)) == BLACK) {
@@ -490,6 +510,7 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BinarySearchTree<K,
                     //fewer black node. This is equiv. to replaceNode's parent subtree as a whole having one fewer
                     //black node - the same problem but moved up a level.
                     replaceNode = parentReplaceNode;
+                    parentReplaceNode = getParent(parentReplaceNode);
 
                 } else { //at least one-of the children is red
                     if (getColour(getLeftChild(siblingNode)) == BLACK) {
