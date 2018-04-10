@@ -6,11 +6,11 @@ import mukulrathi.datastructures.abstractdatatypes.Dictionary;
 import java.util.ArrayList;
 
 public class BTree<K extends Comparable<K>,V> implements Dictionary<K,V> {
-    private int mMinDegree;
-    private BTreeNode<K,V> mRoot;
+    protected int mMinDegree;
+    protected BTreeNode<K,V> mRoot;
 
 
-    private class BTreeNode<K extends Comparable<K>,V>{
+    protected class BTreeNode<K extends Comparable<K>,V>{
         //we use an associative array structure to store key, value pairs, i.e.
         //the key at index i in keys has a corresponding value at index i in values
         public ArrayList<K> keys;
@@ -61,6 +61,8 @@ public class BTree<K extends Comparable<K>,V> implements Dictionary<K,V> {
     public void delete(K k) throws KeyNotFoundException {
 
     }
+
+
 
 
 
