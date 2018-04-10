@@ -98,6 +98,9 @@ public class BTree<K extends Comparable<K>,V> implements Dictionary<K,V> {
             for(BTreeNode<K,V> child: currentNode.children){
                 nodesByLevel(child,depth+1,listOfNodes,maxDepth);
             }
+            listOfNodes.get(depth+1).add(null);//this will print a "||" i.e. clearly indicate when the children of one node end and the
+                                                //other node's children begin
+
         }
 
 
@@ -106,18 +109,16 @@ public class BTree<K extends Comparable<K>,V> implements Dictionary<K,V> {
 
     }
     @Override
-    public String toString(){ //this prints out the BST level by level - which is useful for debugging purposes
+    public String toString(){ //this prints out the B-Tree level by level - which is useful for debugging purposes
         String prettyPrint = "";
         int maxDepth = depth(mRoot);
         prettyPrint+= "Depth of tree: " + (maxDepth-1) + "\n";
 
-        //initialise the list of nodes - initially all null values
+        //initialise the list of nodes
         ArrayList<ArrayList<BTreeNode<K,V>>> listOfNodes = new ArrayList<ArrayList<BTreeNode<K,V>>>(maxDepth);
         for(int i=0; i<maxDepth;i++){
             ArrayList<BTreeNode<K,V>> nodeLevel = new ArrayList<BTreeNode<K,V>>();
-            for(int j=0; j< (int) Math.pow(2,i);j++){
-                nodeLevel.add(null);
-            }
+
             listOfNodes.add(i,nodeLevel);
         }
 
@@ -125,7 +126,7 @@ public class BTree<K extends Comparable<K>,V> implements Dictionary<K,V> {
         for (ArrayList<BTreeNode<K,V>> nodeLevel : listOfNodes){
             for(BTreeNode<K,V> node : nodeLevel){
                 prettyPrint+=" ";
-                prettyPrint+= (node!=null) ? ((node.keys.size()==0)? "||": node) : "-";
+                prettyPrint+= (node!=null) ? ((node.keys.size()==0)? "-": node) : "||";
             }
             prettyPrint+="\n";
         }
