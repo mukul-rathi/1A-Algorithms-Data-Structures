@@ -4,19 +4,12 @@ import mukulrathi.customexceptions.KeyNotFoundException;
 import mukulrathi.datastructures.abstractdatatypes.Dictionary;
 
 public class RedBlackTree<K extends Comparable<K>,V> extends BinarySearchTree<K,V> implements Dictionary<K,V>{
-    private final static boolean RED = false;
-    private final static boolean BLACK = true;
+    protected final static boolean RED = false;
+    protected final static boolean BLACK = true;
 
 
-    private class RBTreeNode<K,V> extends TreeNode<K,V> {
+    protected class RBTreeNode<K,V> extends TreeNode<K,V> {
         public boolean colour;
-        // Reset
-        private static final String printRESET = "\033[0m";  // Text Reset
-
-        // Regular Colors
-        private static final String printBLACK = "\033[0;30m";   // BLACK
-        private static final String printRED = "\033[0;31m";     // RED
-
 
         public RBTreeNode(K k, V v) {
             super(k);
@@ -51,16 +44,16 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BinarySearchTree<K,
     Helper methods that do a NULL check within them, so prevent NullPointerExceptions
      */
 
-    private boolean getColour(RBTreeNode<K,V> node){
+    protected boolean getColour(RBTreeNode<K,V> node){
         return (node==null)? BLACK : node.colour;
     }
-    private RBTreeNode<K,V> getParent(RBTreeNode<K,V> node){
+    protected RBTreeNode<K,V> getParent(RBTreeNode<K,V> node){
         return (node==null)? null: (RBTreeNode<K, V>) node.parent;
     }
-    private RBTreeNode<K,V> getLeftChild(RBTreeNode<K,V> node){
+    protected RBTreeNode<K,V> getLeftChild(RBTreeNode<K,V> node){
         return (node==null)? null: (RBTreeNode<K, V>) node.leftChild;
     }
-    private RBTreeNode<K,V> getRightChild(RBTreeNode<K,V> node){
+    protected RBTreeNode<K,V> getRightChild(RBTreeNode<K,V> node){
         return (node==null)? null: (RBTreeNode<K, V>) node.rightChild;
     }
     private void setColour(RBTreeNode<K,V> node,boolean colour){

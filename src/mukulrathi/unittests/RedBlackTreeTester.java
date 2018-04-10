@@ -2,7 +2,6 @@ package mukulrathi.unittests;
 
 import mukulrathi.customexceptions.KeyNotFoundException;
 import mukulrathi.customexceptions.UnderflowException;
-import mukulrathi.datastructures.implementations.trees.BinarySearchTree;
 import mukulrathi.datastructures.implementations.trees.RedBlackTree;
 
 import java.util.Scanner;
@@ -11,7 +10,7 @@ public class RedBlackTreeTester {
 
 
     public static void main(String[] args){
-        RedBlackTree<Integer,Integer> testRBtree = new RedBlackTree<Integer, Integer>();
+        RedBlackTree<Integer,Integer> testRBtree = new RedBlackTreeUnitTests<Integer, Integer>();
         Scanner input = new Scanner(System.in);
         System.out.println("Test the Red-black tree with integers!");
         System.out.println();
