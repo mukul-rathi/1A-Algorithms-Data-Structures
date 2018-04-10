@@ -43,9 +43,49 @@ public class BTree<K extends Comparable<K>,V> implements Dictionary<K,V> {
 
     }
 
+    //helper class to package together node and index into a tuple,
+    //since we need to know index of key/value within node, as well as which
+    //node we are referring to
+    private class NodeIndexPair<K extends Comparable<K>,V>{
+        public BTreeNode<K,V> node;
+        public int index;
+
+        public NodeIndexPair(BTreeNode<K,V> n, int i){
+            node =n;
+            index = i;
+        }
+
+    }
+
     public BTree(int minDegree){
         mMinDegree = minDegree;
     }
+
+
+    //Internal BTree Methods for search, insert and delete
+
+    private NodeIndexPair<K,V> BTreeSearch(BTreeNode<K,V> node, K k){
+        //search subtree rooted at node for key
+        int i=0;
+        //search along list of keys to find subtree range for key
+        while(i<node.keys.size()&& k.compareTo(node.keys.get(i))>0){
+            i++;
+        }
+        if(i<node.keys.size()&&k.compareTo(node.keys.get(i))==0){
+            //key matches one of the keys in node
+            return new NodeIndexPair<>(node,i);
+        }
+        //key not in node
+        else if(node.isLeaf){
+            //no children to search so key can't be found
+            return null;
+        }
+        else{ //search children subtree i
+            return BTreeSearch(node.children.get(i),k);
+        }
+
+    }
+
 
     @Override
     public void set(K k, V v) {
@@ -54,7 +94,14 @@ public class BTree<K extends Comparable<K>,V> implements Dictionary<K,V> {
 
     @Override
     public V get(K k) throws KeyNotFoundException {
-        return null;
+        NodeIndexPair<K,V> result = BTreeSearch(mRoot,k);
+        if(result==null){
+            throw new KeyNotFoundException(); //key not in B-Tree
+        }
+        else{
+            return result.node.values.get(result.index);
+            //return value at that position
+        }
     }
 
     @Override

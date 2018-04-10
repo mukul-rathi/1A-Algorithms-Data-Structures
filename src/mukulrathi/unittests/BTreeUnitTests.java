@@ -169,9 +169,12 @@ public class BTreeUnitTests<K extends Comparable<K>, V> extends BTree<K,V> {
    private boolean nodeDegreeBound(BTreeNode<K,V> node){
        //this checks whether the number of keys is in correct bound for all nodes in subtree
        // t = minDegree
-       // t-1<= num keys <= 2t-1
+       // t-1<= num keys <= 2t-1, apart from root node - 1<= num keys <= 2t-1
 
-        if((node.keys.size()<(mMinDegree-1)) || (node.keys.size()> (2*mMinDegree-1))){
+        if((node.keys.size()> (2*mMinDegree-1))){
+            return false;
+       }
+       if((node==mRoot&&node.keys.size()<1)||(node.keys.size()<(mMinDegree-1)) ){
             return false;
        }
 
