@@ -305,41 +305,36 @@ public class RedBlackTree<K extends Comparable<K>,V> extends BinarySearchTree<K,
         RBTreeNode<K, V> replaceNode; //node that shifts into the position of the gap in tree.
 
 
-
-        //Case 1: if node has at most one subtree, we just shift this up
-
-        if (getLeftChild(deleteNode) == null || getRightChild(deleteNode) == null){
-
-            if (getLeftChild(deleteNode) == null) {
-                //we are shifting up right subtree
-                replaceNode = getRightChild(deleteNode); //since it is being shifted up
-            }
-            else {
-                //we are shifting up left subtree
-                replaceNode = getLeftChild(deleteNode);
-
-            }
-
-        }
-        //Case 2: node has both subtrees, so its successor lies in right subtree
+        //Case 1: node has both subtrees, so its successor lies in right subtree
         //we swap node with its successor, then delete it
         //For ease of implementation, we will do this by copying the key and value of the successor node,
         //and running delete() on the successor
 
-
-        else {
+        if (getLeftChild(deleteNode) != null && getRightChild(deleteNode) != null) {
             RBTreeNode<K, V> succNode = (RBTreeNode<K, V>) nodeWithKey(successor(k));
-            //store key,value of successor node
-            K succKey = succNode.key;
-            V succVal = succNode.value;
-            //delete successor - note successor has no left subtree so case 1 will apply
-            delete(succKey);
+
             //update the deleteNode to have successor's key,val (so effectively swapped the two nodes)
-            deleteNode.key = succKey;
-            deleteNode.value = succVal;
-            return; //we are done
+            deleteNode.key = succNode.key;
+            deleteNode.value = succNode.value;
+
+            //delete successor - note successor has no left subtree so case 2 will apply
+            deleteNode = succNode;
+
 
         }
+
+        //Case 2: node has at most one subtree, so its replacement node is that subtree (or null if no subtrees)
+
+        if (getLeftChild(deleteNode) == null) {
+            //we are shifting up right subtree (if present)
+            replaceNode = getRightChild(deleteNode);
+        }
+        else {
+            //we are shifting up left subtree
+            replaceNode = getLeftChild(deleteNode);
+
+        }
+
 
 
         if(replaceNode==null){ //i.e node has no subtrees
