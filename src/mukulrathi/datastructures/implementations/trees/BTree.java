@@ -70,6 +70,9 @@ public class BTree<K extends Comparable<K>,V> implements Dictionary<K,V> {
 
     private NodeIndexPair<K,V> BTreeSearch(BTreeNode<K,V> node, K k){
         //search subtree rooted at node for key - returns node and index within node if key is present
+        if(node==null){//empty tree, so not there
+            return null;
+        }
         int i=0;
         //search along list of keys to find subtree range for key
         while(i<node.keys.size()&& k.compareTo(node.keys.get(i))>0){
@@ -271,16 +274,83 @@ public class BTree<K extends Comparable<K>,V> implements Dictionary<K,V> {
         //if not leaf the sibling now has an extra child, whereas ith child has one less child than it should
         //to maintain #keys+1 = #children property, so we correct this by shifting the right-most child of left sibling
         //to left-most child-position of ith child
-        if(!node.children.get(i+1).isLeaf){
-            node.children.get(i).children.add(0,node.children.get(i+1).children.get(node.children.get(i+1).children.size()-1));
-            node.children.get(i+1).children.remove(node.children.get(i+1).children.size()-1));
+        if(!node.children.get(i-1).isLeaf){
+            node.children.get(i).children.add(0,node.children.get(i-1).children.get(node.children.get(i+1).children.size()-1));
+            node.children.get(i-1).children.remove(node.children.get(i-1).children.size()-1);
         }
+    }
+
+    private void BTreeDeleteNonEmpty(BTreeNode<K, V> node, K k) throws BTreeNodeUnderFlowException, KeyNotFoundException {
+        //Pre-condition: node has >=t keys
+        if(node!=mRoot&&node.keys.size()<mMinDegree)throw new BTreeNodeUnderFlowException();
+        int i=0;
+        while(i<node.keys.size()&& k.compareTo(node.keys.get(i))>0){
+            i++;
+        }
+        if(i<node.keys.size()&&k.compareTo(node.keys.get(i))==0) {
+            //key matches one of the keys in node
+
+            if(node.isLeaf){
+                //can simply remove since not underflowing due to precondition -> node has >=t-1 keys after deletion
+                node.keys.remove(i);
+                node.values.remove(i);
+            }
+            else{
+                //can't remove key from non-leaf node since you affect children i and i+1 who lose their separator
+                //so instead either find predecessor or successor and swap positions
+
+                BTreeNode<K, V> succNode = node.children.get(i + 1);
+                while(!succNode.isLeaf){
+                    //keep get left-most child to find successor
+                    succNode = succNode.children.get(0);
+                }
+                K succKey = succNode.keys.get(0);//get successor key of node
+                V succVal = succNode.values.get(0);
+
+                //recursively delete successor - this must be a leaf node by definition
+                BTreeDeleteNonEmpty(node,succKey);
+                //update node to successor key value
+                node.keys.set(i,succKey);
+                node.values.set(i,succVal);
+
+            }
+        }
+            //key not in node
+        else if(node.isLeaf){
+            //no children to search so key can't be found
+            throw new KeyNotFoundException();
+            }
+        else{
+            if(node.children.get(i).keys.size()<mMinDegree){
+                //we need to ensure child has >=t keys
+                if(i>0 && node.children.get(i-1).keys.size()>=mMinDegree){
+                    BTreeRightRotate(node,i);
+                }
+                else if(i<node.keys.size() && node.children.get(i+1).keys.size()>=mMinDegree){
+                    BTreeLeftRotate(node,i);
+                }
+                else{
+                    try {
+                        BTreeNodeMerge(node,i);
+                    } catch (BTreeNodeFullException e) { //this exception shouldn't occur since siblings = t-1 keys
+                                                        //and child has t-1 keys
+                        e.printStackTrace();
+                    } catch (LeafDepthException e) { //this shouldn't occur since tree balanced
+                        e.printStackTrace();
+                    }
+                }
+            }
+            //recurse on child i subtree
+            BTreeDeleteNonEmpty(node.children.get(i),k);
+        }
+
     }
 
 
 
 
-    @Override
+
+        @Override
     public void set(K k, V v) {
         //check if key already present
         NodeIndexPair<K,V> keyPresent = BTreeSearch(mRoot,k);
@@ -340,8 +410,17 @@ public class BTree<K extends Comparable<K>,V> implements Dictionary<K,V> {
         }
     }
 
+
+
     @Override
     public void delete(K k) throws KeyNotFoundException {
+        //NB rather than just doing a search, we pre-emptively merge and rotate to ensure each node in search path
+        //has at least t keys to prevent the costly recursive underflow merging up the tree
+        try {
+            BTreeDeleteNonEmpty(mRoot,k);
+        } catch (BTreeNodeUnderFlowException e) {
+            e.printStackTrace();
+        }
 
 
     }

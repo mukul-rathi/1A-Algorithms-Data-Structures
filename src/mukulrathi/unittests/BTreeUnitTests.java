@@ -1,5 +1,6 @@
 package mukulrathi.unittests;
 
+import mukulrathi.customexceptions.KeyNotFoundException;
 import mukulrathi.customexceptions.LeafDepthException;
 import mukulrathi.datastructures.implementations.trees.BTree;
 /*
@@ -209,6 +210,23 @@ public class BTreeUnitTests<K extends Comparable<K>, V> extends BTree<K,V> {
 
         return results;
 
+    }
+
+    @Override
+    public void set(K k, V v){
+        super.set(k,v);
+        System.out.print(unitTestResult());
+    }
+    @Override
+    public void delete(K k) throws KeyNotFoundException {
+        super.delete(k);
+        System.out.print(unitTestResult());
+    }
+    @Override
+    public V get(K k) throws KeyNotFoundException {
+        V ans = super.get(k);
+        System.out.print(unitTestResult());
+        return ans;
     }
 
 }
