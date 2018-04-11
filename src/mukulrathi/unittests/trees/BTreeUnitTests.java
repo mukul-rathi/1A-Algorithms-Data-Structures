@@ -1,4 +1,4 @@
-package mukulrathi.unittests;
+package mukulrathi.unittests.trees;
 
 import mukulrathi.customexceptions.BTreeNodeFullException;
 import mukulrathi.customexceptions.BTreeNodeUnderFlowException;

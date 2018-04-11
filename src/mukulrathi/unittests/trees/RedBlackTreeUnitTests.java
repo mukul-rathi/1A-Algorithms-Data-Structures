@@ -1,4 +1,4 @@
-package mukulrathi.unittests;
+package mukulrathi.unittests.trees;
 
 /*
     This class contains the methods to check if the Red-Black Tree invariants hold

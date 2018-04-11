@@ -8,6 +8,7 @@ import java.util.Scanner;
 
 /*This is a test class with a main method that can be used to test each of the
   sorting algorithms - this uses the Strategy Java Design Pattern.
+
 */
 public class SortingTester {
     private static int[] test;
