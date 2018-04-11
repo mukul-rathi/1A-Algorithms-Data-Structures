@@ -1,5 +1,7 @@
 package mukulrathi.unittests;
 
+import mukulrathi.customexceptions.BTreeNodeFullException;
+import mukulrathi.customexceptions.BTreeNodeUnderFlowException;
 import mukulrathi.customexceptions.KeyNotFoundException;
 import mukulrathi.customexceptions.LeafDepthException;
 import mukulrathi.datastructures.implementations.trees.BTree;
@@ -36,6 +38,9 @@ public class BTreeUnitTests<K extends Comparable<K>, V> extends BTree<K,V> {
        // i.e. for all i key i-1 <= any key in child i subtree <=key i
         if(node.isLeaf){
             return true; // no children so clearly true
+        }
+        else if(node.keys.size()==0){ //0 keys, 1 child so clearly true
+            return true;
         }
         else{
             //NB if internalKeysInOrder holds, then it suffices to
@@ -175,11 +180,11 @@ public class BTreeUnitTests<K extends Comparable<K>, V> extends BTree<K,V> {
         if((node.keys.size()> (2*mMinDegree-1))){
             return false;
        }
-       if((node==mRoot&&node.keys.size()<1)||(node.keys.size()<(mMinDegree-1)) ){
+       if(node!=mRoot&&(node.keys.size()<(mMinDegree-1)) ){
             return false;
        }
 
-       //again, if it is a leaf we are node, else we check through subtrees rooted at children
+       //again, if it is a leaf we are done, else we check through subtrees rooted at children
        if(node.isLeaf){
             return true;
        }
@@ -191,14 +196,33 @@ public class BTreeUnitTests<K extends Comparable<K>, V> extends BTree<K,V> {
            return true;
        }
    }
+    private boolean sameNumKeysVals(BTreeNode<K,V> node){
+       //this checks whether we have same number of keys and values in each node - i.e no unpaired keys/values
+       if(node.keys.size()!=node.values.size()){
+           return false;
+       }
+        //again, if it is a leaf we are done, else we check through subtrees rooted at children
+        if(node.isLeaf){
+            return true;
+        }
+        else{
+            for(BTreeNode<K,V> child: node.children){
+                if(!sameNumKeysVals(child)) return false; //subtree rooted at child violates the property so this
+                //subtree also violates property
+            }
+            return true;
+        }
 
+    }
     private boolean unitTestPass(){
-        return internalKeysInOrder(mRoot)&&childKeysInOrder(mRoot)&&isLeafCheck(mRoot)&&numChildrenCorrect(mRoot)
-                &&leafDepthSame()&&nodeDegreeBound(mRoot);
+        if (mRoot==null) return true;
+        else {
+            return internalKeysInOrder(mRoot) && childKeysInOrder(mRoot) && isLeafCheck(mRoot) && numChildrenCorrect(mRoot)
+                    && leafDepthSame() && nodeDegreeBound(mRoot)&&sameNumKeysVals(mRoot);
+        }
     }
 
     private String unitTestResult(){
-        if(unitTestPass()) return "";
 
         String results = "\n UNIT TESTS:  \n";
         results+="Internal keys in order? " + internalKeysInOrder(mRoot) + "\n";
@@ -207,6 +231,7 @@ public class BTreeUnitTests<K extends Comparable<K>, V> extends BTree<K,V> {
         results+="Number of children correct? " + numChildrenCorrect(mRoot) + "\n";
         results+="Leaf depth same? " + leafDepthSame() + "\n";
         results+="Node degrees bounded? " + nodeDegreeBound(mRoot) + "\n";
+        results+="Same number of keys and values? " + sameNumKeysVals(mRoot) + "\n";
 
         return results;
 
@@ -214,19 +239,62 @@ public class BTreeUnitTests<K extends Comparable<K>, V> extends BTree<K,V> {
 
     @Override
     public void set(K k, V v){
+        System.out.print((unitTestPass())?"": ("Pre: Set error:" + unitTestResult()));
         super.set(k,v);
-        System.out.print(unitTestResult());
+        System.out.print((unitTestPass())?"": ("Post: Set error:" + unitTestResult()));
     }
     @Override
     public void delete(K k) throws KeyNotFoundException {
+        System.out.print((unitTestPass())?"": ("Pre: Delete error:" + unitTestResult()));
         super.delete(k);
-        System.out.print(unitTestResult());
+        System.out.print((unitTestPass())?"": ("Post: Delete error:" + unitTestResult()));
     }
     @Override
     public V get(K k) throws KeyNotFoundException {
+        System.out.print((unitTestPass())?"": ("Pre: Get error:" + unitTestResult()));
         V ans = super.get(k);
-        System.out.print(unitTestResult());
+        System.out.print((unitTestPass())?"": ("Post: Get error:" + unitTestResult()));
         return ans;
     }
+
+    @Override
+    protected void BTreeSplitChild(BTreeNode<K,V> node,int i) throws BTreeNodeFullException, BTreeNodeUnderFlowException {
+        System.out.print((unitTestPass())?"": ("Pre: SplitChild error:" + unitTestResult()));
+        super.BTreeSplitChild(node,i);
+        System.out.print((unitTestPass())?"": ("Post: SplitChild error:" + unitTestResult()));
+    }
+    @Override
+    protected void BTreeInsertNonFull(BTreeNode<K,V> node,K k, V v) throws BTreeNodeFullException {
+        System.out.print((unitTestPass())?"": ("Pre: InsertNonFull error:" + unitTestResult()));
+        super.BTreeInsertNonFull(node,k, v);
+        System.out.print((unitTestPass())?"": ("Post: InsertNonFull error:" + unitTestResult()));
+
+    }
+    @Override
+    protected void BTreeNodeMerge(BTreeNode<K,V> node,int i) throws LeafDepthException, BTreeNodeFullException, BTreeNodeUnderFlowException {
+        System.out.print((unitTestPass())?"": ("Pre: Merge error:" + unitTestResult()));
+        super.BTreeNodeMerge(node,i);
+        System.out.print((unitTestPass())?"": ("Post: Merge error:" + unitTestResult()));
+    }
+    @Override
+    protected void BTreeLeftRotate(BTreeNode<K,V> node,int i) throws BTreeNodeUnderFlowException {
+        System.out.print((unitTestPass())?"": ("Pre: LeftRotate error:" + unitTestResult()));
+        super.BTreeLeftRotate(node,i);
+        System.out.print((unitTestPass())?"": ("Post: LeftRotate error:" + unitTestResult()));
+    }
+    @Override
+    protected void BTreeRightRotate(BTreeNode<K,V> node,int i) throws BTreeNodeUnderFlowException {
+        System.out.print((unitTestPass())?"": ("Pre: RightRotate error:" + unitTestResult()));
+        super.BTreeRightRotate(node,i);
+        System.out.print((unitTestPass())?"": ("Post: RightRotate error:" + unitTestResult()));
+    }
+
+    @Override
+    protected void BTreeDeleteNonEmpty(BTreeNode<K,V> node,K k) throws BTreeNodeUnderFlowException, KeyNotFoundException {
+        System.out.print((unitTestPass())?"": ("Pre: DeleteNonEmpty error:" + unitTestResult()));
+        super.BTreeDeleteNonEmpty(node,k);
+        System.out.print((unitTestPass())?"": ("Post: DeleteNonEmpty error:" + unitTestResult()));
+    }
+
 
 }

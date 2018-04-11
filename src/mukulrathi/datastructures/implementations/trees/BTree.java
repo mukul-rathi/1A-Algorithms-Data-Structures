@@ -42,6 +42,7 @@ public class BTree<K extends Comparable<K>,V> implements Dictionary<K,V> {
         }
 
         public boolean isFull(){ //this method checks if node is full
+
             return (keys.size()==(2*mMinDegree-1));
         }
 
@@ -95,7 +96,7 @@ public class BTree<K extends Comparable<K>,V> implements Dictionary<K,V> {
 
 
 
-    private void BTreeSplitChild(BTreeNode<K, V> node, int i) throws BTreeNodeFullException {
+    protected void BTreeSplitChild(BTreeNode<K, V> node, int i) throws BTreeNodeFullException, BTreeNodeUnderFlowException {
         /*this splits the node's ith child (size 2t-1) into two children of size(t-1) and migrates the median key
         up to the current node
             [A][B]                  [A][d][B]
@@ -105,21 +106,22 @@ public class BTree<K extends Comparable<K>,V> implements Dictionary<K,V> {
 
         //Pre-condition -node is not full, otherwise we wouldn't be able to add median key of child to it
         if(node.isFull()) throw new BTreeNodeFullException();
+        if(!node.children.get(i).isFull()) throw new BTreeNodeUnderFlowException();
 
         //split ith child into two children, each with t-1 keys
         //first has 0..t-2 inclusive, second has t...2t-2 inclusive
         BTreeNode<K, V> oldChild = node.children.get(i);
-        BTreeNode<K,V> newChild1 = new BTreeNode<K,V>((ArrayList<K>) node.keys.subList(0,mMinDegree-1),
-                                                    (ArrayList<V>) node.values.subList(0,mMinDegree-1));
-        BTreeNode<K,V> newChild2 = new BTreeNode<K,V>((ArrayList<K>) node.keys.subList(mMinDegree,2*mMinDegree-1),
-                                                    (ArrayList<V>) node.values.subList(mMinDegree,2*mMinDegree-1));
+        BTreeNode<K,V> newChild1 = new BTreeNode<K,V>( new ArrayList<K> (oldChild.keys.subList(0,mMinDegree-1)),
+                                                    new ArrayList<V> (oldChild.values.subList(0,mMinDegree-1)));
+        BTreeNode<K,V> newChild2 = new BTreeNode<K,V>(new ArrayList<K> (oldChild.keys.subList(mMinDegree,2*mMinDegree-1)),
+                                                    new ArrayList<V> (oldChild.values.subList(mMinDegree,2*mMinDegree-1)));
         if(!oldChild.isLeaf){
             //split children of oldChild 0...2t-1 -> 0...t-1 and t...2t-1 inclusive
             newChild1.isLeaf = false;
             newChild2.isLeaf = false;
 
-            newChild1.children = (ArrayList<BTreeNode<K, V>>) oldChild.children.subList(0,mMinDegree);
-            newChild2.children = (ArrayList<BTreeNode<K, V>>) oldChild.children.subList(mMinDegree,2*mMinDegree-1);
+            newChild1.children = new ArrayList<BTreeNode<K, V>> (oldChild.children.subList(0,mMinDegree));
+            newChild2.children = new ArrayList<BTreeNode<K, V>> (oldChild.children.subList(mMinDegree,2*mMinDegree));
         }
 
         //migrate median key
@@ -129,12 +131,19 @@ public class BTree<K extends Comparable<K>,V> implements Dictionary<K,V> {
 
         //replace oldChild
         node.children.set(i,newChild1);
-        node.children.add(i+1,newChild2);
+        if(i==node.keys.size()) {
+            node.children.add(newChild2); //add to end
+            // (this is here to prevent IndexOutOfBoundsException)
+
+        }
+        else {
+            node.children.add(i + 1, newChild2);
+        }
 
     }
 
 
-    private void BTreeInsertNonFull(BTreeNode<K, V> node, K k, V v) throws BTreeNodeFullException {
+    protected void BTreeInsertNonFull(BTreeNode<K, V> node, K k, V v) throws BTreeNodeFullException {
         if(node.isFull()) throw new BTreeNodeFullException();
         if(node.isLeaf){ //base case, we always insert key into a leaf node, since that
             // maintains non-leaf node #children=#keys+1 property
@@ -156,7 +165,11 @@ public class BTree<K extends Comparable<K>,V> implements Dictionary<K,V> {
             }
             if(node.children.get(i).isFull()){
                 //if the child is full we split
-                BTreeSplitChild(node,i);
+                try {
+                    BTreeSplitChild(node,i);
+                } catch (BTreeNodeUnderFlowException e) {
+                    e.printStackTrace();
+                }
                 //now we have to check if the new ith key (old ith child's median key) is smaller than k
                 if(k.compareTo(node.keys.get(i))>0){
                     //larger than ith key but smaller than i+1th key, so recurse down i+1th child
@@ -169,7 +182,7 @@ public class BTree<K extends Comparable<K>,V> implements Dictionary<K,V> {
         }
     }
 
-    private void BTreeNodeMerge(BTreeNode<K, V> node, int i) throws BTreeNodeFullException, LeafDepthException, BTreeNodeUnderFlowException {
+    protected void BTreeNodeMerge(BTreeNode<K, V> node, int i) throws BTreeNodeFullException, LeafDepthException, BTreeNodeUnderFlowException {
         //This merges the ith key of the node with the ith and i+1th children of the node
         //Precondition: the ith and i+1th children each have t-1 keys and the node has at least t keys (if not root)
         if(node.children.get(i).keys.size()>=mMinDegree || node.children.get(i).keys.size()>=mMinDegree){
@@ -224,7 +237,7 @@ public class BTree<K extends Comparable<K>,V> implements Dictionary<K,V> {
 
     }
 
-    private void BTreeLeftRotate(BTreeNode<K, V> node, int i) throws BTreeNodeUnderFlowException {
+    protected void BTreeLeftRotate(BTreeNode<K, V> node, int i) throws BTreeNodeUnderFlowException {
         //this is where we borrow the minimal key from the right sibling and rotate that up into parent ith key
         //so ith child #keys increases by one
 
@@ -232,13 +245,15 @@ public class BTree<K extends Comparable<K>,V> implements Dictionary<K,V> {
         if(i>=node.keys.size() || node.children.get(i+1).keys.size()<mMinDegree){
             throw new BTreeNodeUnderFlowException();
         }
-
+        //add node ith key to ith child
         node.children.get(i).keys.add(node.keys.get(i));
         node.children.get(i).values.add(node.values.get(i));
 
+        //set node ith key to i+1th child's minimal key
         node.keys.set(i,node.children.get(i+1).keys.get(0));
         node.values.set(i,node.children.get(i+1).values.get(0));
 
+        //remove minimal key from i+1th child
         node.children.get(i+1).keys.remove(0);
         node.children.get(i+1).values.remove(0);
 
@@ -253,7 +268,7 @@ public class BTree<K extends Comparable<K>,V> implements Dictionary<K,V> {
 
     }
 
-    private void BTreeRightRotate(BTreeNode<K, V> node, int i) throws BTreeNodeUnderFlowException {
+    protected void BTreeRightRotate(BTreeNode<K, V> node, int i) throws BTreeNodeUnderFlowException {
         //this is where we borrow the maximal key from the left sibling rotate that up into parent i-1th key
         //so ith child #keys increases by one
 
@@ -261,15 +276,17 @@ public class BTree<K extends Comparable<K>,V> implements Dictionary<K,V> {
         if(i<=0 || node.children.get(i-1).keys.size()<mMinDegree){
             throw new BTreeNodeUnderFlowException();
         }
-
+        //add node i-1th key to ith child
         node.children.get(i).keys.add(node.keys.get(i-1));
         node.children.get(i).values.add(node.values.get(i-1));
 
+        //set node i-1th key to i-1th child's maximal key
         node.keys.set(i-1,node.children.get(i-1).keys.get(node.children.get(i-1).keys.size()-1));
         node.values.set(i-1,node.children.get(i-1).values.get(node.children.get(i-1).keys.size()-1));
 
-        node.children.get(i+1).keys.remove(node.children.get(i-1).keys.size()-1);
-        node.children.get(i+1).values.remove(node.children.get(i-1).keys.size()-1);
+        //remove  i-1th child's maximal key
+        node.children.get(i-1).keys.remove(node.children.get(i-1).keys.size()-1);
+        node.children.get(i-1).values.remove(node.children.get(i-1).keys.size()-1);
 
         //if not leaf the sibling now has an extra child, whereas ith child has one less child than it should
         //to maintain #keys+1 = #children property, so we correct this by shifting the right-most child of left sibling
@@ -280,7 +297,7 @@ public class BTree<K extends Comparable<K>,V> implements Dictionary<K,V> {
         }
     }
 
-    private void BTreeDeleteNonEmpty(BTreeNode<K, V> node, K k) throws BTreeNodeUnderFlowException, KeyNotFoundException {
+    protected void BTreeDeleteNonEmpty(BTreeNode<K, V> node, K k) throws BTreeNodeUnderFlowException, KeyNotFoundException {
         //Pre-condition: node has >=t keys
         if(node!=mRoot&&node.keys.size()<mMinDegree)throw new BTreeNodeUnderFlowException();
         int i=0;
@@ -291,7 +308,7 @@ public class BTree<K extends Comparable<K>,V> implements Dictionary<K,V> {
             //key matches one of the keys in node
 
             if(node.isLeaf){
-                //can simply remove since not underflowing due to precondition -> node has >=t-1 keys after deletion
+                //can simply remove since not under-flowing due to precondition -> node has >=t-1 keys after deletion
                 node.keys.remove(i);
                 node.values.remove(i);
             }
@@ -383,6 +400,8 @@ public class BTree<K extends Comparable<K>,V> implements Dictionary<K,V> {
                         BTreeSplitChild(mRoot, 0);
                     } catch (BTreeNodeFullException e) { //this shouldn't happen, but the exception is there as a check
                         e.printStackTrace();
+                    } catch (BTreeNodeUnderFlowException e) {
+                        e.printStackTrace();
                     }
                 }
                 //now root is definitely not full
@@ -433,7 +452,9 @@ public class BTree<K extends Comparable<K>,V> implements Dictionary<K,V> {
 
     //this method returns the depth of the tree
     private int depth(BTreeNode<K,V> currentNode){
-        if(currentNode.isLeaf) return 0; //since leaf so no children - 1 node subtree has depth 0
+        if (currentNode==null) return 0;//empty tree
+
+        if(currentNode.isLeaf) return 1; //since leaf so no children - 1 node subtree has depth 0
         else {
             int maxChildDepth = 0;
             for(BTreeNode<K,V> child: currentNode.children){

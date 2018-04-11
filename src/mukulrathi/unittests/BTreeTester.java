@@ -13,14 +13,25 @@ public class BTreeTester {
         Scanner input = new Scanner(System.in);
         System.out.println("Test the B tree with integers!");
         System.out.println();
+        for(int i=1;i<=20; i++){
+            testBtree.set(i,i+10);
+        }
+        System.out.println(testBtree);
+
         String[] operations = input.nextLine().split(" ");
         while(!operations[0].equals("q")) {
             switch(operations[0]) {
                 case "set":
                     int key = Integer.parseInt(operations[1]);
-                    int val = Integer.parseInt(operations[2]);
-                    testBtree.set(key,val);
-                    break;
+                    if(operations.length==2){ //this is so program doesn't terminate if I accidentally forget to type val
+                        System.out.println("Error: Invalid operation");
+                        break;
+                    }
+                    else {
+                        int val = Integer.parseInt(operations[2]);
+                        testBtree.set(key, val);
+                        break;
+                    }
                 case "delete":
                     key = Integer.parseInt(operations[1]);
                     try {
@@ -32,7 +43,7 @@ public class BTreeTester {
                 case "get":
                     key = Integer.parseInt(operations[1]);
                     try {
-                        testBtree.get(key);
+                        System.out.println("Value is: "+ testBtree.get(key));
                     } catch (KeyNotFoundException e) {
                         System.out.println("Error: The key was not in the tree.");
                     }
