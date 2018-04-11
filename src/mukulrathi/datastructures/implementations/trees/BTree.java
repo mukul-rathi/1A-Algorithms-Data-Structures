@@ -183,16 +183,16 @@ public class BTree<K extends Comparable<K>,V> implements Dictionary<K,V> {
     }
 
     protected void BTreeNodeMerge(BTreeNode<K, V> node, int i) throws BTreeNodeFullException, LeafDepthException, BTreeNodeUnderFlowException {
-        //This merges the ith key of the node with the ith and i+1th children of the node
+        //This merges the ith key with the ith and i+1th children
         //Precondition: the ith and i+1th children each have t-1 keys and the node has at least t keys (if not root)
-        if(node.children.get(i).keys.size()>=mMinDegree || node.children.get(i).keys.size()>=mMinDegree){
+        if(node.children.get(i).keys.size()>=mMinDegree || node.children.get(i+1).keys.size()>=mMinDegree){
             throw new BTreeNodeFullException(); //the children have too many keys - they violate the pre-condition
         }
         if(node!=mRoot && node.keys.size()<mMinDegree){
             throw new BTreeNodeUnderFlowException(); //Pre-condition violated - too few keys in node
         }
-        BTreeNode<K, V> oldChild1 = node.children.get(i);
-        BTreeNode<K,V> oldChild2 = node.children.get(i+1);
+        BTreeNode<K, V> oldChild1 = node.children.get(i);;
+        BTreeNode oldChild2= node.children.get(i+1);;
 
         ArrayList<K> newKeys = oldChild1.keys;
         newKeys.add(node.keys.get(i));
@@ -226,7 +226,8 @@ public class BTree<K extends Comparable<K>,V> implements Dictionary<K,V> {
         node.values.remove(i);
 
         node.children.remove(i);
-        node.children.set(i,newChild);
+        node.children.set(i, newChild);
+
 
         //finally, we check if node is the root, and if so, whether it is empty, i.e. tree shrunk in height and
         //newChild = root
@@ -269,7 +270,7 @@ public class BTree<K extends Comparable<K>,V> implements Dictionary<K,V> {
     }
 
     protected void BTreeRightRotate(BTreeNode<K, V> node, int i) throws BTreeNodeUnderFlowException {
-        //this is where we borrow the maximal key from the left sibling rotate that up into parent i-1th key
+        //this is where we borrow the maximal key from the left sibling and rotate that up into parent i-1th key
         //so ith child #keys increases by one
 
         //Pre-condition: ith child has a left sibling which has at least t keys
@@ -277,8 +278,8 @@ public class BTree<K extends Comparable<K>,V> implements Dictionary<K,V> {
             throw new BTreeNodeUnderFlowException();
         }
         //add node i-1th key to ith child
-        node.children.get(i).keys.add(node.keys.get(i-1));
-        node.children.get(i).values.add(node.values.get(i-1));
+        node.children.get(i).keys.add(0,node.keys.get(i-1));
+        node.children.get(i).values.add(0,node.values.get(i-1));
 
         //set node i-1th key to i-1th child's maximal key
         node.keys.set(i-1,node.children.get(i-1).keys.get(node.children.get(i-1).keys.size()-1));
@@ -292,7 +293,7 @@ public class BTree<K extends Comparable<K>,V> implements Dictionary<K,V> {
         //to maintain #keys+1 = #children property, so we correct this by shifting the right-most child of left sibling
         //to left-most child-position of ith child
         if(!node.children.get(i-1).isLeaf){
-            node.children.get(i).children.add(0,node.children.get(i-1).children.get(node.children.get(i+1).children.size()-1));
+            node.children.get(i).children.add(0,node.children.get(i-1).children.get(node.children.get(i-1).children.size()-1));
             node.children.get(i-1).children.remove(node.children.get(i-1).children.size()-1);
         }
     }
@@ -311,29 +312,31 @@ public class BTree<K extends Comparable<K>,V> implements Dictionary<K,V> {
                 //can simply remove since not under-flowing due to precondition -> node has >=t-1 keys after deletion
                 node.keys.remove(i);
                 node.values.remove(i);
+                return; //we are done
             }
             else{
                 //can't remove key from non-leaf node since you affect children i and i+1 who lose their separator
                 //so instead either find predecessor or successor and swap positions
 
-                BTreeNode<K, V> succNode = node.children.get(i + 1);
-                while(!succNode.isLeaf){
-                    //keep get left-most child to find successor
-                    succNode = succNode.children.get(0);
+                BTreeNode<K, V> predNode = node.children.get(i);
+                while(!predNode.isLeaf){
+                    //keep get right-most child to find predecessor
+                    predNode = predNode.children.get(predNode.children.size()-1);
                 }
-                K succKey = succNode.keys.get(0);//get successor key of node
-                V succVal = succNode.values.get(0);
+                K predKey = predNode.keys.get(predNode.keys.size()-1);//get predecessor key of node
+                V predVal = predNode.values.get(predNode.values.size()-1);
 
-                //recursively delete successor - this must be a leaf node by definition
-                BTreeDeleteNonEmpty(node,succKey);
-                //update node to successor key value
-                node.keys.set(i,succKey);
-                node.values.set(i,succVal);
+                //update node to predecessor key,value
+                node.keys.set(i,predKey);
+                node.values.set(i,predVal);
+
+                //we are now searching for predKey
+                k = predKey;
 
             }
         }
-            //key not in node
-        else if(node.isLeaf){
+        //key k not in node / we are removing orginal instance of predKey
+        if(node.isLeaf){
             //no children to search so key can't be found
             throw new KeyNotFoundException();
             }
@@ -348,6 +351,9 @@ public class BTree<K extends Comparable<K>,V> implements Dictionary<K,V> {
                 }
                 else{
                     try {
+                        if(i>0){ //i.e. node has left sibling
+                            i--; //this means merge will happen with left sibling rather than right sibling
+                        }
                         BTreeNodeMerge(node,i);
                     } catch (BTreeNodeFullException e) { //this exception shouldn't occur since siblings = t-1 keys
                                                         //and child has t-1 keys
