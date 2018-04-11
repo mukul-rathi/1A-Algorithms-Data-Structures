@@ -1,7 +1,6 @@
 package mukulrathi.datastructures.implementations.trees;
 
-import mukulrathi.customexceptions.BTreeNodeFullException;
-import mukulrathi.customexceptions.KeyNotFoundException;
+import mukulrathi.customexceptions.*;
 import mukulrathi.datastructures.abstractdatatypes.Dictionary;
 
 import java.util.ArrayList;
@@ -167,6 +166,118 @@ public class BTree<K extends Comparable<K>,V> implements Dictionary<K,V> {
         }
     }
 
+    private void BTreeNodeMerge(BTreeNode<K, V> node, int i) throws BTreeNodeFullException, LeafDepthException, BTreeNodeUnderFlowException {
+        //This merges the ith key of the node with the ith and i+1th children of the node
+        //Precondition: the ith and i+1th children each have t-1 keys and the node has at least t keys (if not root)
+        if(node.children.get(i).keys.size()>=mMinDegree || node.children.get(i).keys.size()>=mMinDegree){
+            throw new BTreeNodeFullException(); //the children have too many keys - they violate the pre-condition
+        }
+        if(node!=mRoot && node.keys.size()<mMinDegree){
+            throw new BTreeNodeUnderFlowException(); //Pre-condition violated - too few keys in node
+        }
+        BTreeNode<K, V> oldChild1 = node.children.get(i);
+        BTreeNode<K,V> oldChild2 = node.children.get(i+1);
+
+        ArrayList<K> newKeys = oldChild1.keys;
+        newKeys.add(node.keys.get(i));
+        newKeys.addAll(oldChild2.keys);
+
+        ArrayList<V> newVals = oldChild1.values;
+        newVals.add(node.values.get(i));
+        newVals.addAll(oldChild2.values);
+
+        BTreeNode<K,V> newChild = new BTreeNode<K,V>(newKeys,newVals);
+
+        //if one of the children is a leaf and the other is not, tree is not balanced, so throw an exception
+        if(oldChild1.isLeaf){
+            if(!oldChild2.isLeaf) throw new LeafDepthException();
+        }
+        else{
+            if(oldChild2.isLeaf){
+                throw new LeafDepthException();
+            }
+            else{
+                //both oldChildren have children, so add them to newChild (2t children in total)
+                ArrayList<BTreeNode<K,V>> newChildren = oldChild1.children;
+                newChildren.addAll(oldChild2.children);
+                newChild.isLeaf = false;
+                newChild.children = newChildren;
+            }
+        }
+
+        //finally, remove the ith key,value pair, and replace the two old children with the new Child
+        node.keys.remove(i);
+        node.values.remove(i);
+
+        node.children.remove(i);
+        node.children.set(i,newChild);
+
+        //finally, we check if node is the root, and if so, whether it is empty, i.e. tree shrunk in height and
+        //newChild = root
+        if(node==mRoot && (node.keys.size()==0)){
+            mRoot = newChild;
+        }
+
+
+    }
+
+    private void BTreeLeftRotate(BTreeNode<K, V> node, int i) throws BTreeNodeUnderFlowException {
+        //this is where we borrow the minimal key from the right sibling and rotate that up into parent ith key
+        //so ith child #keys increases by one
+
+        //Pre-condition: ith child has a right sibling which has at least t keys
+        if(i>=node.keys.size() || node.children.get(i+1).keys.size()<mMinDegree){
+            throw new BTreeNodeUnderFlowException();
+        }
+
+        node.children.get(i).keys.add(node.keys.get(i));
+        node.children.get(i).values.add(node.values.get(i));
+
+        node.keys.set(i,node.children.get(i+1).keys.get(0));
+        node.values.set(i,node.children.get(i+1).values.get(0));
+
+        node.children.get(i+1).keys.remove(0);
+        node.children.get(i+1).values.remove(0);
+
+        //if not leaf the sibling now has an extra child, whereas ith child has one less child than it should
+        //to maintain #keys+1 = #children property, so we correct this by shifting the left-most child of right sibling
+        //to right-most child-position of ith child
+        if(!node.children.get(i+1).isLeaf){
+            node.children.get(i).children.add(node.children.get(i+1).children.get(0));
+            node.children.get(i+1).children.remove(0);
+        }
+
+
+    }
+
+    private void BTreeRightRotate(BTreeNode<K, V> node, int i) throws BTreeNodeUnderFlowException {
+        //this is where we borrow the maximal key from the left sibling rotate that up into parent i-1th key
+        //so ith child #keys increases by one
+
+        //Pre-condition: ith child has a left sibling which has at least t keys
+        if(i<=0 || node.children.get(i-1).keys.size()<mMinDegree){
+            throw new BTreeNodeUnderFlowException();
+        }
+
+        node.children.get(i).keys.add(node.keys.get(i-1));
+        node.children.get(i).values.add(node.values.get(i-1));
+
+        node.keys.set(i-1,node.children.get(i-1).keys.get(node.children.get(i-1).keys.size()-1));
+        node.values.set(i-1,node.children.get(i-1).values.get(node.children.get(i-1).keys.size()-1));
+
+        node.children.get(i+1).keys.remove(node.children.get(i-1).keys.size()-1);
+        node.children.get(i+1).values.remove(node.children.get(i-1).keys.size()-1);
+
+        //if not leaf the sibling now has an extra child, whereas ith child has one less child than it should
+        //to maintain #keys+1 = #children property, so we correct this by shifting the right-most child of left sibling
+        //to left-most child-position of ith child
+        if(!node.children.get(i+1).isLeaf){
+            node.children.get(i).children.add(0,node.children.get(i+1).children.get(node.children.get(i+1).children.size()-1));
+            node.children.get(i+1).children.remove(node.children.get(i+1).children.size()-1));
+        }
+    }
+
+
 
 
     @Override
@@ -217,7 +328,6 @@ public class BTree<K extends Comparable<K>,V> implements Dictionary<K,V> {
     }
 
 
-
     @Override
     public V get(K k) throws KeyNotFoundException {
         NodeIndexPair<K,V> result = BTreeSearch(mRoot,k);
@@ -232,6 +342,7 @@ public class BTree<K extends Comparable<K>,V> implements Dictionary<K,V> {
 
     @Override
     public void delete(K k) throws KeyNotFoundException {
+
 
     }
 
