@@ -10,11 +10,17 @@ This class is an example implementation of the Queue ADT using an Array.
 public class ArrayQueue<T> implements Queue<T>{
     private ArrayList<T> mQueue;//NB using ArrayList as substitute for array, since arrays
                                 //don't work well with generics due to type erasure
-    public  ArrayQueue(){
+
+    //used an initializer block for code common to both constructors
+    {
         mQueue = new ArrayList<T>();
     }
+
+
+    public  ArrayQueue(){
+
+    }
     public ArrayQueue(T x){
-        mQueue = new ArrayList<T>();
         mQueue.add(x);
 
     }

@@ -21,7 +21,7 @@ To implement Sets/Dictionaries we have multiple potential options:
             to lookup key - O(lg n).
 
  */
-public interface Dictionary<K,V> {
+public interface Dictionary<K extends Comparable<K>,V> {
     void set(K k, V v); //store the (k,v) pair in dictionary -
                         // overwrite any old value associated with k
                         //Post-condition: get(k) == v
