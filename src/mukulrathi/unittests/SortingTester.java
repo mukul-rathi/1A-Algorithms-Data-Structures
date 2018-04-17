@@ -1,5 +1,6 @@
 package mukulrathi.unittests;
 
+import mukulrathi.algorithms.sorting.HeapSort;
 import mukulrathi.algorithms.sorting.MergeSort;
 import mukulrathi.algorithms.sorting.SortingAlgo;
 
@@ -17,7 +18,7 @@ public class SortingTester {
 
     public static void main (String[] args){
 
-        sorter = new MergeSort();
+        sorter = new HeapSort();
 
         Scanner input = new Scanner(System.in);
         System.out.println("Enter number of integers: ");

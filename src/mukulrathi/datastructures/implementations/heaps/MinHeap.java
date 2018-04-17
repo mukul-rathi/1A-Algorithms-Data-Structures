@@ -5,7 +5,10 @@ import mukulrathi.customexceptions.ValueNotPresentException;
 import mukulrathi.datastructures.abstractdatatypes.PriorityQueue;
 
 import java.util.*;
-
+/*
+    This class implements a binary min-heap - note that this class removes any duplicate references - i.e
+    those that point to same object in memory, so at most 1 ref to each object
+ */
 public class MinHeap<T> extends PriorityQueue<T> {
     protected ArrayList<T> mHeap = new ArrayList<T>();
     protected HashMap<T,Integer> indexOf = new HashMap<T, Integer>(); //this is used for O(1) access to the
@@ -19,11 +22,20 @@ public class MinHeap<T> extends PriorityQueue<T> {
     public MinHeap(Collection<T> list, Comparator<? super T> comp){
         super(comp);
         mHeap.addAll(list);
-        for(int i=0;i<mHeap.size();i++){ //add the new values to indexOf for O(1) access
-            indexOf.put(mHeap.get(i),i);
+        Iterator<T> it = mHeap.iterator();
+        int i=0;
+        while (it.hasNext()){ //add the new values to indexOf for O(1) access and remove duplicates
+            T nextVal = it.next();
+            if(indexOf.containsKey(nextVal)){
+                it.remove();
+            }
+            else {
+                indexOf.put(nextVal, i);
+                i++;
+            }
         }
-        for(int i=mHeap.size()/2;i>=0;i--){ //construct min-heap from unordered ArrayList
-            minHeapify(i);
+        for(int j= mHeap.size()/2;j>=0;j--){ //construct min-heap from unordered ArrayList
+            minHeapify(j);
         }
 
     }
@@ -64,7 +76,7 @@ public class MinHeap<T> extends PriorityQueue<T> {
         } else {
             smallest = i;
         }
-        if (rightChild(i) <= (mHeap.size() - 1) && mComp.compare(mHeap.get(rightChild(i)), mHeap.get(i)) < 0) { //ditto with rightChild
+        if (rightChild(i) <= (mHeap.size() - 1) && mComp.compare(mHeap.get(rightChild(i)), mHeap.get(smallest)) < 0) { //ditto with rightChild
             smallest = rightChild(i);
         }
         //if parent isn't smallest we have a min-heap property violation
