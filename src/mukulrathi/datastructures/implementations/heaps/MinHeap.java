@@ -22,12 +22,14 @@ public class MinHeap<T> extends PriorityQueue<T> {
     public MinHeap(Collection<T> list, Comparator<? super T> comp){
         super(comp);
         mHeap.addAll(list);
-        Iterator<T> it = mHeap.iterator();
+
+        Iterator<T> it = mHeap.iterator(); //we use an iterator since we may remove items as we iterate through
+                                            //and thus change the ArrayList
         int i=0;
         while (it.hasNext()){ //add the new values to indexOf for O(1) access and remove duplicates
             T nextVal = it.next();
             if(indexOf.containsKey(nextVal)){
-                it.remove();
+                it.remove(); //removes the last-requested it.next() item i.e. nextVal
             }
             else {
                 indexOf.put(nextVal, i);

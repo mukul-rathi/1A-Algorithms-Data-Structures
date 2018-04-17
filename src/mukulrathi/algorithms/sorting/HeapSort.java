@@ -20,8 +20,7 @@ public class HeapSort implements SortingAlgo{
         List<Integer> aList = Arrays.stream(A).boxed().collect(Collectors.toList()); //convert int[] to List<Integer>
                                                                                 //by converting array to stream, boxing int -> Integer
                                                                                 //and collecting stream -> list
-        mHeap= new MinHeapUnitTests<Integer>(aList,(x, y)->(x-y)); //sort by min value
-        System.out.println(mHeap);
+        mHeap= new MinHeap<Integer>(aList,(x, y)->(x-y)); //sort by min value
         int[] result = new int[A.length];
         int i=0;
         while(!mHeap.isEmpty()){
