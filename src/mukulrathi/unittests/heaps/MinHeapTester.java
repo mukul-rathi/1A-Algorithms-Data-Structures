@@ -11,7 +11,7 @@ public class MinHeapTester {
     public static void main(String[] args) {
         MinHeap<Integer> testMinHeap = new MinHeap<Integer>((x, y) -> (x - y)); //lambda function to sort integers
         Scanner input = new Scanner(System.in);
-        System.out.println("Test the BST with integers!");
+        System.out.println("Test the min-heap with integers!");
         System.out.println();
         String[] operations = input.nextLine().split(" ");
         while (!operations[0].equals("q")) {
@@ -25,11 +25,11 @@ public class MinHeapTester {
                     try {
                         testMinHeap.delete(val);
                     } catch (ValueNotPresentException e) {
-                        System.out.println("Error: The key was not in the tree.");
+                        System.out.println("Error: The key was not in the heap.");
                     }
                     break;
                 case "isEmpty":
-                    System.out.println("Tree empty? : " + testMinHeap.isEmpty());
+                    System.out.println("Heap empty? : " + testMinHeap.isEmpty());
                     break;
                 case "extract-min":
                     try {
@@ -42,7 +42,7 @@ public class MinHeapTester {
                     try {
                         System.out.println("The first element is: " + testMinHeap.first());
                     } catch (UnderflowException e) {
-                        System.out.println("Error: The tree is empty");
+                        System.out.println("Error: The heap is empty");
                     }
                     break;
                 default:
