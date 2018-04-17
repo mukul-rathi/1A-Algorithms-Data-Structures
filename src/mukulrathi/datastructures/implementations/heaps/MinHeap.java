@@ -83,6 +83,9 @@ public class MinHeap<T> extends PriorityQueue<T> {
 
     @Override
     public void insert(T x) {
+        if(indexOf.containsKey(x)){
+            return; //x already in the array - this ensures no duplicates
+        }
         mHeap.add(x); //we add item to the array (i.e. effectively it has key=MAX_VALUE)
         indexOf.put(x,mHeap.size()-1);
         try {
