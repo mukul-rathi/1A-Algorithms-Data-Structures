@@ -7,8 +7,8 @@ import mukulrathi.datastructures.abstractdatatypes.PriorityQueue;
 import java.util.*;
 
 public class MinHeap<T> extends PriorityQueue<T> {
-    private ArrayList<T> mHeap = new ArrayList<T>();
-    private HashMap<T,Integer> indexOf = new HashMap<T, Integer>(); //this is used for O(1) access to the
+    protected ArrayList<T> mHeap = new ArrayList<T>();
+    protected HashMap<T,Integer> indexOf = new HashMap<T, Integer>(); //this is used for O(1) access to the
     // location of the item in the heap
 
 
@@ -30,11 +30,11 @@ public class MinHeap<T> extends PriorityQueue<T> {
 
 
     //helper functions to find parent, rightChild and leftChild of node i.
-    private int rightChild(int i) {
+    protected int rightChild(int i) {
         return 2*i+2;
     }
 
-    private int leftChild(int i) {
+    protected int leftChild(int i) {
         return 2*i+1;
     }
 
@@ -84,6 +84,7 @@ public class MinHeap<T> extends PriorityQueue<T> {
     @Override
     public void insert(T x) {
         mHeap.add(x); //we add item to the array (i.e. effectively it has key=MAX_VALUE)
+        indexOf.put(x,mHeap.size()-1);
         try {
             decreaseKey(x); //let the value bubble up to the correct place in heap
         } catch (ValueNotPresentException e) { //this will not be thrown since we just added x, so must be there
@@ -171,7 +172,7 @@ public class MinHeap<T> extends PriorityQueue<T> {
         int numNodesAtLevel = 1; //max number of nodes in heap of this height - initially heap = 1 node
         int i=0;
         while(i<mHeap.size()){
-            result+=mHeap.get(i++) + " "; //add current node and increment counter (so considers next node)
+            result+="(" + mHeap.get(i++) + ") "; //add current node and increment counter (so considers next node)
             if(i==numNodesAtLevel){ //we need to add another level to heap
                 result+="\n";
                 numNodesAtLevel= 2*numNodesAtLevel+1;//the number of nodes in a heap with an additional level
