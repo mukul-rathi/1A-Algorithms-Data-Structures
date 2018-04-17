@@ -4,10 +4,7 @@ import mukulrathi.customexceptions.UnderflowException;
 import mukulrathi.customexceptions.ValueNotPresentException;
 import mukulrathi.datastructures.abstractdatatypes.PriorityQueue;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class MinHeap<T> extends PriorityQueue<T> {
     private ArrayList<T> mHeap = new ArrayList<T>();
@@ -17,6 +14,18 @@ public class MinHeap<T> extends PriorityQueue<T> {
 
     public MinHeap(Comparator<? super T> comp) {
         super(comp);
+    }
+
+    public MinHeap(Collection<T> list, Comparator<? super T> comp){
+        super(comp);
+        mHeap.addAll(list);
+        for(int i=0;i<mHeap.size();i++){ //add the new values to indexOf for O(1) access
+            indexOf.put(mHeap.get(i),i);
+        }
+        for(int i=mHeap.size()/2;i>=0;i--){ //construct min-heap from unordered ArrayList
+            minHeapify(i);
+        }
+
     }
 
 
