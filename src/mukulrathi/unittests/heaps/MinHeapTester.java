@@ -2,14 +2,14 @@ package mukulrathi.unittests.heaps;
 
 import mukulrathi.customexceptions.UnderflowException;
 import mukulrathi.customexceptions.ValueNotPresentException;
-import mukulrathi.datastructures.implementations.heaps.MinHeap;
+import mukulrathi.datastructures.implementations.heaps.BinaryMinHeap;
 
 import java.util.Scanner;
 
 public class MinHeapTester {
 
     public static void main(String[] args) {
-        MinHeap<Integer> testMinHeap = new MinHeap<Integer>((x, y) -> (x - y)); //lambda function to sort integers
+        BinaryMinHeap<Integer> testMinHeap = new BinaryMinHeap<Integer>((x, y) -> (x - y)); //lambda function to sort integers
         Scanner input = new Scanner(System.in);
         System.out.println("Test the min-heap with integers!");
         System.out.println();

@@ -1,12 +1,12 @@
 package mukulrathi.unittests.heaps;
 import mukulrathi.customexceptions.UnderflowException;
 import mukulrathi.customexceptions.ValueNotPresentException;
-import mukulrathi.datastructures.implementations.heaps.MinHeap;
+import mukulrathi.datastructures.implementations.heaps.BinaryMinHeap;
 
 import java.util.Collection;
 import java.util.Comparator;
 
-public class MinHeapUnitTests<T> extends MinHeap<T> {
+public class MinHeapUnitTests<T> extends BinaryMinHeap<T> {
 
     //constructors
     public MinHeapUnitTests(Comparator<? super T> comp) {

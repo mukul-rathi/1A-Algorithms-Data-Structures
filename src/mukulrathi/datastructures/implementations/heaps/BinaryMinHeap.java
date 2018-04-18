@@ -9,17 +9,17 @@ import java.util.*;
     This class implements a binary min-heap - note that this class removes any duplicate references - i.e
     those that point to same object in memory, so at most 1 ref to each object
  */
-public class MinHeap<T> extends PriorityQueue<T> {
+public class BinaryMinHeap<T> extends PriorityQueue<T> {
     protected ArrayList<T> mHeap = new ArrayList<T>();
     protected HashMap<T,Integer> indexOf = new HashMap<T, Integer>(); //this is used for O(1) access to the
     // location of the item in the heap
 
 
-    public MinHeap(Comparator<? super T> comp) {
+    public BinaryMinHeap(Comparator<? super T> comp) {
         super(comp);
     }
 
-    public MinHeap(Collection<T> list, Comparator<? super T> comp){
+    public BinaryMinHeap(Collection<T> list, Comparator<? super T> comp){
         super(comp);
         mHeap.addAll(list);
 
@@ -171,7 +171,7 @@ public class MinHeap<T> extends PriorityQueue<T> {
         return (mHeap.size()==0);
     }
 
-    public void merge(MinHeap<T> otherQ) { //if the other queue is a min-heap, then we can merge in O(m+n) time
+    public void merge(BinaryMinHeap<T> otherQ) { //if the other queue is a min-heap, then we can merge in O(m+n) time
         int origSize = mHeap.size();
         mHeap.addAll(otherQ.mHeap);
         for(int i=origSize;i<mHeap.size();i++){ //add the new values to indexOf for O(1) access
