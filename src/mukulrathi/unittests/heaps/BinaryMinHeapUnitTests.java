@@ -18,7 +18,7 @@ public class BinaryMinHeapUnitTests<T> extends BinaryMinHeap<T> {
     }
 
     //check min-heap property not violated
-    public boolean minHeapProperty() {
+    private boolean minHeapProperty() {
         for(int i=0; i<mHeap.size();i++){
             //if the node is greater than either of its children then min-heap property violated
             if(leftChild(i)<mHeap.size()&&mComp.compare(mHeap.get(i),mHeap.get(leftChild(i)))>0 ){
@@ -32,7 +32,7 @@ public class BinaryMinHeapUnitTests<T> extends BinaryMinHeap<T> {
     }
 
 
-    public boolean indexCheck() {
+    private boolean indexCheck() {
         //check the indexOf hashmap has been kept up to do with the correct values
         for (int i = 0; i < mHeap.size(); i++) {
             if (!indexOf.containsKey(mHeap.get(i)) || indexOf.get(mHeap.get(i)) != i) { //if indexOf doesn't contain object

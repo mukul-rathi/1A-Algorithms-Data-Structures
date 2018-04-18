@@ -5,9 +5,13 @@ import mukulrathi.customexceptions.ValueNotPresentException;
 import mukulrathi.datastructures.abstractdatatypes.PriorityQueue;
 
 import java.util.Comparator;
+import java.util.HashMap;
 
 public class BinomialHeap<T> extends PriorityQueue<T> {
     protected BinomialHeapNode<T> mFirstRoot; //first root in the root list of binomial heap
+
+    protected HashMap<T,BinomialHeapNode<T>> valToNode = new HashMap<T, BinomialHeapNode<T>>(); //this is used for O(1) access to the
+    // location of the item in the heap
 
     protected class BinomialHeapNode<T>{
         public T value; //this is the payload of the node
@@ -17,8 +21,8 @@ public class BinomialHeap<T> extends PriorityQueue<T> {
         public BinomialHeapNode<T> parent;
         public BinomialHeapNode<T> child; //this points to left-most child
 
-        public BinomialHeapNode<T> leftSibling; //we connect siblings using a circular doubly-linked list
-        public BinomialHeapNode<T> rightSibling;
+        public BinomialHeapNode<T> leftSibling; //we connect siblings using a doubly-linked list
+        public BinomialHeapNode<T> rightSibling;//we maintain invariant that children have decreasing order left->right
 
 
     }

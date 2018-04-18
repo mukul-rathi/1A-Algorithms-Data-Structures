@@ -33,7 +33,7 @@ public class BTreeUnitTests<K extends Comparable<K>, V> extends BTree<K,V> {
        }
    }
 
-   public boolean childKeysInOrder(BTreeNode<K,V> node){
+   private boolean childKeysInOrder(BTreeNode<K,V> node){
         //this checks if keys in node separate the ranges of keys stored in each subtree
        // i.e. for all i key i-1 <= any key in child i subtree <=key i
         if(node.isLeaf){
