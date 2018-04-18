@@ -43,7 +43,9 @@ public class BinomialHeap<T> extends PriorityQueue<T> {
     @Override
     public void insert(T x) {
         //we consider inserted value as a binomial heap of one node and merge it
-        merge(new BinomialHeap<T>(new BinomialHeapNode<T>(x),mComp));
+        BinomialHeapNode<T> newNode = new BinomialHeapNode<T>(x);
+        valToNode.put(x,newNode);
+        merge(new BinomialHeap<T>(newNode,mComp));
     }
 
     @Override
