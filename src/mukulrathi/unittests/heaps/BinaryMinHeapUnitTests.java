@@ -6,14 +6,14 @@ import mukulrathi.datastructures.implementations.heaps.BinaryMinHeap;
 import java.util.Collection;
 import java.util.Comparator;
 
-public class MinHeapUnitTests<T> extends BinaryMinHeap<T> {
+public class BinaryMinHeapUnitTests<T> extends BinaryMinHeap<T> {
 
     //constructors
-    public MinHeapUnitTests(Comparator<? super T> comp) {
+    public BinaryMinHeapUnitTests(Comparator<? super T> comp) {
         super(comp);
     }
 
-    public MinHeapUnitTests(Collection<T> list, Comparator<? super T> comp) {
+    public BinaryMinHeapUnitTests(Collection<T> list, Comparator<? super T> comp) {
         super(list, comp);
     }
 

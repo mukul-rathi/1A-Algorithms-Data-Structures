@@ -6,7 +6,7 @@ import mukulrathi.datastructures.implementations.heaps.BinaryMinHeap;
 
 import java.util.Scanner;
 
-public class MinHeapTester {
+public class BinaryMinHeapTester {
 
     public static void main(String[] args) {
         BinaryMinHeap<Integer> testMinHeap = new BinaryMinHeap<Integer>((x, y) -> (x - y)); //lambda function to sort integers
