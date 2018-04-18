@@ -9,38 +9,42 @@ import java.util.Scanner;
 public class BinomialHeapTester {
 
     public static void main(String[] args) {
-        BinomialHeap<Integer> testMinHeap = new BinomialHeapUnitTests<Integer>((x, y) -> (x - y)); //lambda function to sort integers
+        BinomialHeap<Integer> testBinomialHeap = new BinomialHeapUnitTests<Integer>((x, y) -> (x - y)); //lambda function to sort integers
         Scanner input = new Scanner(System.in);
         System.out.println("Test the binomial heap with integers!");
         System.out.println();
+        for(int i=1;i<=20; i++){
+            testBinomialHeap.insert(i);
+        }
+        System.out.println(testBinomialHeap);
         String[] operations = input.nextLine().split(" ");
         while (!operations[0].equals("q")) {
             switch (operations[0]) {
                 case "insert":
                     int val = Integer.parseInt(operations[1]);
-                    testMinHeap.insert(val);
+                    testBinomialHeap.insert(val);
                     break;
                 case "delete":
                     val = Integer.parseInt(operations[1]);
                     try {
-                        testMinHeap.delete(val);
+                        testBinomialHeap.delete(val);
                     } catch (ValueNotPresentException e) {
                         System.out.println("Error: The key was not in the heap.");
                     }
                     break;
                 case "isEmpty":
-                    System.out.println("Heap empty? : " + testMinHeap.isEmpty());
+                    System.out.println("Heap empty? : " + testBinomialHeap.isEmpty());
                     break;
                 case "extract-min":
                     try {
-                        System.out.println("The min element is: " + testMinHeap.extractMin());
+                        System.out.println("The min element is: " + testBinomialHeap.extractMin());
                     } catch (UnderflowException e) {
                         System.out.println("Error: The heap is empty");
                     }
                     break;
                 case "first":
                     try {
-                        System.out.println("The first element is: " + testMinHeap.first());
+                        System.out.println("The first element is: " + testBinomialHeap.first());
                     } catch (UnderflowException e) {
                         System.out.println("Error: The heap is empty");
                     }
@@ -50,7 +54,7 @@ public class BinomialHeapTester {
 
 
             }
-            System.out.println(testMinHeap);
+            System.out.println(testBinomialHeap);
             operations = input.nextLine().split(" ");
         }
     }

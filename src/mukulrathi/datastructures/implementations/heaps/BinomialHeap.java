@@ -4,6 +4,7 @@ import mukulrathi.customexceptions.UnderflowException;
 import mukulrathi.customexceptions.ValueNotPresentException;
 import mukulrathi.datastructures.abstractdatatypes.PriorityQueue;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 
@@ -28,6 +29,15 @@ public class BinomialHeap<T> extends PriorityQueue<T> {
             value = val;
             order = 0;
         }
+
+        public BinomialHeapNode() {
+            order = 0;
+        }
+
+        @Override
+        public String toString(){
+            return "(Value: " + value +" Order: " + order + ")";
+        }
     }
 
 
@@ -42,6 +52,9 @@ public class BinomialHeap<T> extends PriorityQueue<T> {
 
     @Override
     public void insert(T x) {
+        if(valToNode.keySet().contains(x)){
+            return; //x is already in the heap so we do not insert duplicates
+        }
         //we consider inserted value as a binomial heap of one node and merge it
         BinomialHeapNode<T> newNode = new BinomialHeapNode<T>(x);
         valToNode.put(x,newNode);
@@ -142,10 +155,8 @@ public class BinomialHeap<T> extends PriorityQueue<T> {
         //pointers to keep track of the two roots we are comparing
         BinomialHeapNode<T> thisRoot =mFirstRoot;
         BinomialHeapNode<T> otherRoot =otherQ.mFirstRoot;
-        while((thisRoot.rightSibling!=null&&(otherRoot.order < thisRoot.order))
-                ||otherRoot==null) {
-            //until we've either reached the last root of this heap and the roots in the other heap have larger order,
-            //so need to be appended to root list, or we've finished adding the roots from the other heap
+        while(otherRoot!=null){
+            //until we've finished adding the roots from the other heap
 
             if (otherRoot.order < thisRoot.order) {
                 //place other root before this root in the heap root list
@@ -156,31 +167,37 @@ public class BinomialHeap<T> extends PriorityQueue<T> {
                 else{ //thisRoot has a left-sibling
                     thisRoot.leftSibling.rightSibling = otherRoot;
                 }
+                BinomialHeapNode<T> nextOtherRoot =otherRoot.rightSibling;
 
                 otherRoot.rightSibling = thisRoot;
                 thisRoot.leftSibling = otherRoot;
-
-                otherRoot = otherRoot.rightSibling;
+                otherRoot = nextOtherRoot;
             }
             else{
-                // move one root along
-                thisRoot = thisRoot.rightSibling;
+                if(thisRoot.rightSibling==null){
+                    //i.e. we've reached last root of this heap and need to append remaining roots from other queue
+                    thisRoot.rightSibling = otherRoot;
+                    otherRoot.leftSibling = thisRoot;
+
+                    break;//we've finished merging
+                }
+                else {
+                    // move one root along
+                    thisRoot = thisRoot.rightSibling;
+                }
             }
         }
-        if(thisRoot.rightSibling==null){
-            //i.e. we've reached last root of this heap and need to append remaining roots from other queue
-            thisRoot.rightSibling = otherRoot;
-            otherRoot.leftSibling = thisRoot;
-        }
+
 
         //now we go through and merge the heaps with same order
         BinomialHeapNode<T> currentRoot = mFirstRoot;
         while(currentRoot.rightSibling!=null){
             //iterate through heap
             if(currentRoot.order==currentRoot.rightSibling.order) { //two roots of same order - need to be merged
-                mergeTree(currentRoot, currentRoot.rightSibling);
+                BinomialHeapNode<T> currentRightSibling = currentRoot.rightSibling;
+                mergeTree(currentRoot, currentRightSibling);
                 //check which of the roots is still in root-list
-                currentRoot = (currentRoot.parent==null)?currentRoot:currentRoot.rightSibling;
+                currentRoot = (currentRoot.parent==null)?currentRoot:currentRightSibling;
             }
             else {
                 currentRoot = currentRoot.rightSibling; //check next pair along
@@ -207,5 +224,70 @@ public class BinomialHeap<T> extends PriorityQueue<T> {
     public boolean isEmpty() {
 
         return (mFirstRoot==null);
+    }
+    /*
+            This method modifies the list of nodes at each level - used for the toString method
+            we pass in listOfNodes to prevent unnecessary copying, and maxDepth to prevent repeated computation
+         */
+    private void nodesByLevel(BinomialHeapNode<T> currentNode, int depth, ArrayList<ArrayList<BinomialHeapNode<T>>> listOfNodes, int maxDepth){
+        if (depth >= maxDepth){ //greater than max depth of tree so cannot have any nodes here
+            return;
+        }
+        if(currentNode==null){
+            currentNode= new BinomialHeapNode<T>(); //empty placeholder node
+        }
+        listOfNodes.get(depth).add(currentNode);
+        if(currentNode.order==0){
+            nodesByLevel(null,depth+1,listOfNodes,maxDepth); //put an empty placeholder node for children
+        }
+        else{
+            BinomialHeapNode<T> child = currentNode.child;
+            while(child!=null){
+                nodesByLevel(child,depth+1,listOfNodes,maxDepth);
+                child = child.rightSibling;
+            }
+            listOfNodes.get(depth+1).add(null);//this will print a "||" i.e. clearly indicate when the children of one node end and the
+            //other node's children begin
+
+        }
+
+
+
+
+
+    }
+    public String treePrinter(BinomialHeapNode<T> root) { //this prints out the B-Tree level by level - which is useful for debugging purposes
+        String prettyPrint = "";
+        int maxDepth = root.order+1;
+        prettyPrint+= "Depth of tree: " + (maxDepth-1) + "\n";
+
+        //initialise the list of nodes
+        ArrayList<ArrayList<BinomialHeapNode<T>>> listOfNodes = new ArrayList<ArrayList<BinomialHeapNode<T>>>(maxDepth);
+        for(int i=0; i<maxDepth;i++){
+            ArrayList<BinomialHeapNode<T>> nodeLevel = new ArrayList<BinomialHeapNode<T>>();
+
+            listOfNodes.add(i,nodeLevel);
+        }
+
+        nodesByLevel(root,0,listOfNodes,maxDepth);
+        for (ArrayList<BinomialHeapNode<T>> nodeLevel : listOfNodes){
+            for(BinomialHeapNode<T> node : nodeLevel){
+                prettyPrint+=" ";
+                prettyPrint+= (node!=null) ? ((node.value==null)? "-": node) : "||";
+            }
+            prettyPrint+="\n";
+        }
+        return prettyPrint;
+    }
+
+    @Override
+    public String toString() { //this prints out the
+        String prettyPrint = "Binomial Heap: ";
+        BinomialHeapNode<T> currentNode = mFirstRoot;
+        while(currentNode!=null) {
+            prettyPrint+= treePrinter(currentNode);
+            currentNode=currentNode.rightSibling;
+        }
+        return prettyPrint;
     }
 }

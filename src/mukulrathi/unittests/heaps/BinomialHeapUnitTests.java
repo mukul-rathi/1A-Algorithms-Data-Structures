@@ -45,10 +45,10 @@ public class BinomialHeapUnitTests<T> extends BinomialHeap<T> {
         BinomialHeapNode<T> currentChild = node.child;
         int maxChildHeight=-1;
         while(currentChild!=null){
-            if(treeSize(currentChild)==-1) {
+            if(treeHeight(currentChild)==-1) {
                 return -1; //child does not satisfy binomial tree height property,so tree doesn't either
             }
-            maxChildHeight = Math.max(maxChildHeight,treeSize(currentChild));
+            maxChildHeight = Math.max(maxChildHeight,treeHeight(currentChild));
             currentChild= currentChild.rightSibling;
         }
         int height = maxChildHeight+1; //so if node has no children height=0
