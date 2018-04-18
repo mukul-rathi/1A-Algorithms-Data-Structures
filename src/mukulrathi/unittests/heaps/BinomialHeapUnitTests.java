@@ -5,6 +5,7 @@ import mukulrathi.datastructures.implementations.heaps.BinomialHeap;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.PriorityQueue;
 
 public class BinomialHeapUnitTests<T> extends BinomialHeap<T> {
 
@@ -228,6 +229,13 @@ public class BinomialHeapUnitTests<T> extends BinomialHeap<T> {
         super.decreaseKey(x);
         System.out.print((unitTestPass())?"": ("Post: Decrease-key error:" + unitTestResult()));
     }
+    @Override
+    public void merge(BinomialHeap<T> otherQ){
+        System.out.print((unitTestPass())?"": ("Pre: Merge error:" + unitTestResult()));
+        super.merge(otherQ);
+        System.out.print((unitTestPass())?"": ("Post: Merge error:" + unitTestResult()));
+    }
+
 
 
 }

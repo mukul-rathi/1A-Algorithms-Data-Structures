@@ -69,13 +69,39 @@ public class BinomialHeap<T> extends PriorityQueue<T> {
         BinomialHeapNode<T> currentRoot = mFirstRoot.rightSibling;
         while(currentRoot!=null){
             minVal = (mComp.compare(currentRoot.value,minVal)<0)?currentRoot.value:minVal;
+            currentRoot = currentRoot.rightSibling;
         }
         return minVal;
     }
 
     @Override
     public T extractMin() throws UnderflowException {
-        BinomialHeapNode<T> deleteRoot = valToNode.get(first());
+        T returnVal = first();
+        try {
+            delete(first());
+        } catch (ValueNotPresentException e) {//this will not get thrown since first() is minValue of heap
+            e.printStackTrace();
+        }
+        return returnVal;
+    }
+
+    //this removes any node from the tree
+    @Override
+    public void delete(T x) throws ValueNotPresentException {
+        if(!valToNode.keySet().contains(x)) throw new ValueNotPresentException();
+        BinomialHeapNode<T> deleteNode = valToNode.get(x);
+        //first we bubble up the node to the root of its tree
+        while(deleteNode.parent!=null){
+            //we swap the two - we do this by swapping values, and updating valToNode
+           valToNode.put(deleteNode.value,deleteNode.parent);
+           valToNode.put(deleteNode.parent.value,deleteNode);
+
+            T temp = deleteNode.value;
+            deleteNode.value = deleteNode.parent.value;
+            deleteNode.parent.value = temp;
+            deleteNode = deleteNode.parent; //go up one level of tree
+        }
+        BinomialHeapNode<T> deleteRoot = deleteNode; //we call it deleteRoot to emphasise it is a root now
 
             //splice deleteRoot out of root doubly linked list
             if(deleteRoot.leftSibling==null){ //i.e. deleteRoot was the first root in heap
@@ -91,17 +117,25 @@ public class BinomialHeap<T> extends PriorityQueue<T> {
         //merge the heap with the deleteRoot child heap
             merge(new BinomialHeap<T>(deleteRoot.child,mComp));
 
-            return deleteRoot.value; //return minimum value
-
-    }
-
-    @Override
-    public void delete(T x) throws ValueNotPresentException {
+            //update valToNode hashmap
+            valToNode.remove(deleteRoot.value);
 
     }
 
     @Override
     public void decreaseKey(T x) throws ValueNotPresentException {
+        if(!valToNode.keySet().contains(x)) throw new ValueNotPresentException();
+        BinomialHeapNode<T> currentNode = valToNode.get(x);
+        while(currentNode.parent!=null && mComp.compare(currentNode.value,currentNode.parent.value)<0){ //min-heap property violation
+            //we swap the two - we do this by swapping values, and updating valtoNode
+            valToNode.put(currentNode.value,currentNode.parent);
+            valToNode.put(currentNode.parent.value,currentNode);
+
+            T temp = currentNode.value;
+            currentNode.value = currentNode.parent.value;
+            currentNode.parent.value = temp;
+            currentNode = currentNode.parent; //go up one level of tree
+        }
 
     }
     private void mergeTree(BinomialHeapNode<T> root1,BinomialHeapNode<T> root2 ) {
@@ -282,7 +316,7 @@ public class BinomialHeap<T> extends PriorityQueue<T> {
 
     @Override
     public String toString() { //this prints out the
-        String prettyPrint = "Binomial Heap: ";
+        String prettyPrint = "Binomial Heap: \n";
         BinomialHeapNode<T> currentNode = mFirstRoot;
         while(currentNode!=null) {
             prettyPrint+= treePrinter(currentNode);
