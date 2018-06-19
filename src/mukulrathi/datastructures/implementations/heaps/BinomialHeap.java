@@ -138,7 +138,7 @@ public class BinomialHeap<T> extends PriorityQueue<T> {
         }
 
     }
-    private void mergeTree(BinomialHeapNode<T> root1,BinomialHeapNode<T> root2 ) {
+    private BinomialHeapNode<T> mergeTree(BinomialHeapNode<T> root1,BinomialHeapNode<T> root2 ) {
         //pre-condition: root1 and root2 are adjacent nodes
         if(mComp.compare(root1.value,root2.value)>0){
             //swap the two references so that root1 points to smaller root
@@ -174,70 +174,92 @@ public class BinomialHeap<T> extends PriorityQueue<T> {
         root1.child = root2;
         root2.parent = root1;
         root1.order++; //increase root1's order since now has extra child
+        return root1;
     }
 
     public void merge(BinomialHeap<T> otherQ) {
-        //we merge in two passes - first we insert the other heap's roots into the heap root list, maintaining
-        //increasing order of the heaps
-        if(otherQ==null || otherQ.mFirstRoot==null){
-            return; //merging with empty heap so no change
-        }
-        if(mFirstRoot==null){ //this heap is empty so again simple to merge
-            mFirstRoot = otherQ.mFirstRoot;
-            return;
-        }
-        //pointers to keep track of the two roots we are comparing
-        BinomialHeapNode<T> thisRoot =mFirstRoot;
-        BinomialHeapNode<T> otherRoot =otherQ.mFirstRoot;
-        while(otherRoot!=null){
-            //until we've finished adding the roots from the other heap
 
-            if (otherRoot.order < thisRoot.order) {
-                //place other root before this root in the heap root list
-                otherRoot.leftSibling = thisRoot.leftSibling;
-                if (thisRoot == mFirstRoot) {
-                    mFirstRoot = otherRoot;
-                }
-                else{ //thisRoot has a left-sibling
-                    thisRoot.leftSibling.rightSibling = otherRoot;
-                }
-                BinomialHeapNode<T> nextOtherRoot =otherRoot.rightSibling;
+        //first we update HashMap accordingly
+        valToNode.addAll(otherQ.valToNode);
 
-                otherRoot.rightSibling = thisRoot;
-                thisRoot.leftSibling = otherRoot;
-                otherRoot = nextOtherRoot;
+        //next we create an Arraylist where the value at index i is a tree with root order i - null otherwise
+        int maxOrder = 0;
+        BinomialHeapNode<T> currentNode = mFirstRoot;
+        while(currentNode!=null){
+            maxOrder = (currentNode.order>maxOrder) ? currentNode.order : maxOrder;
+            currentNode = currentNode.rightSibling;
+        }
+        if(otherQ!=null) {
+            currentNode = otherQ.mFirstRoot;
+        }
+        while(currentNode!=null){
+            maxOrder = (currentNode.order>maxOrder) ? currentNode.order : maxOrder;
+            currentNode = currentNode.rightSibling;
+
+        }
+        //initialise arraylist with null values
+        ArrayList<BinomialHeapNode<T>> rootArray = new ArrayList<BinomialHeapNode<T>>();
+        for(int i=0; i<=maxOrder; i++){
+            rootArray.add(null);
+        }
+        //now iterate through roots and merge if necessary
+        currentNode = mFirstRoot;
+        while(currentNode!=null){
+            if(rootArray.get(currentNode.order)==null){
+                rootArray.set(currentNode.order,currentNode);
             }
             else{
-                if(thisRoot.rightSibling==null){
-                    //i.e. we've reached last root of this heap and need to append remaining roots from other queue
-                    thisRoot.rightSibling = otherRoot;
-                    otherRoot.leftSibling = thisRoot;
-
-                    break;//we've finished merging
+                BinomialHeapNode<T> tempNode = currentNode;
+                while(rootArray.get(tempNode.order)!=null){
+                    tempNode = mergeTree(tempNode,rootArray.get(tempNode.order));
+                    rootArray.set(tempNode.order-1, null);
+                    //now there is no node with same order as tempNode's original order, since it has been merged into a tree of order+1
                 }
-                else {
-                    // move one root along
-                    thisRoot = thisRoot.rightSibling;
-                }
+                rootArray.set(tempNode.order,tempNode);
             }
+            currentNode = currentNode.rightSibling;
+        }
+        if(otherQ!=null) {
+            currentNode = otherQ.mFirstRoot;
+        }
+        while(currentNode!=null){
+            if(rootArray.get(currentNode.order)==null){
+                rootArray.set(currentNode.order,currentNode);
+            }
+            else{
+                BinomialHeapNode<T> tempNode = currentNode;
+                while(rootArray.get(tempNode.order)!=null){
+                    tempNode = mergeTree(tempNode,rootArray.get(tempNode.order));
+                    rootArray.set(tempNode.order-1, null);
+                    //now there is no node with same order as tempNode's original order, since it has been merged into a tree of order+1
+                }
+                rootArray.set(tempNode.order,tempNode);
+            }
+            currentNode = currentNode.rightSibling;
         }
 
-
-        //now we go through and merge the heaps with same order
-        BinomialHeapNode<T> currentRoot = mFirstRoot;
-        while(currentRoot.rightSibling!=null){
-            //iterate through heap
-            if(currentRoot.order==currentRoot.rightSibling.order) { //two roots of same order - need to be merged
-                BinomialHeapNode<T> currentRightSibling = currentRoot.rightSibling;
-                mergeTree(currentRoot, currentRightSibling);
-                //check which of the roots is still in root-list
-                currentRoot = (currentRoot.parent==null)?currentRoot:currentRightSibling;
+        //now go through the arraylist and make this new root list
+        mFirstRoot = null;
+        currentNode = null;
+        for(BinomialHeapNode<T> root : rootArray){
+            if(root==null){ //ignore null values since they correspond to orders which are not present in tree.
+                continue;
             }
-            else {
-                currentRoot = currentRoot.rightSibling; //check next pair along
+            //first root we are adding to root list
+            if (mFirstRoot==null){
+                mFirstRoot = root;
+                mFirstRoot.leftSibling = null;
+                currentNode = root;
+            }
+            else{
+                //add root to end of list
+                currentNode.rightSibling = root;
+                root.leftSibling = currentNode;
+                currentNode = root;
+
             }
         }
-
+        currentNode.rightSibling = null;
 
 
     }
