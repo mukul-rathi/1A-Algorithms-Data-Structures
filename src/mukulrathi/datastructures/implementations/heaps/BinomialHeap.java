@@ -57,8 +57,9 @@ public class BinomialHeap<T> extends PriorityQueue<T> {
         }
         //we consider inserted value as a binomial heap of one node and merge it
         BinomialHeapNode<T> newNode = new BinomialHeapNode<T>(x);
-        valToNode.put(x,newNode);
-        merge(new BinomialHeap<T>(newNode,mComp));
+        BinomialHeap<T> newHeap = new BinomialHeap<T>(newNode, mComp);
+        newHeap.valToNode.put(x,newNode);
+        merge(newHeap);
     }
 
     @Override
@@ -151,7 +152,7 @@ public class BinomialHeap<T> extends PriorityQueue<T> {
         //update root1 sibling pointers to splice out root2 from root list
         if(root1.leftSibling==root2){
             root1.leftSibling = root2.leftSibling;
-            if(root2==mFirstRoot){
+            if(root2==mFirstRoot || root2.leftSibling ==null ){
                 mFirstRoot = root1;
             }
             else{ //root2 has a left Sibling since not first root
@@ -180,7 +181,7 @@ public class BinomialHeap<T> extends PriorityQueue<T> {
     public void merge(BinomialHeap<T> otherQ) {
 
         //first we update HashMap accordingly
-        valToNode.addAll(otherQ.valToNode);
+        valToNode.putAll(otherQ.valToNode);
 
         //next we create an Arraylist where the value at index i is a tree with root order i - null otherwise
         int maxOrder = 0;
@@ -198,8 +199,8 @@ public class BinomialHeap<T> extends PriorityQueue<T> {
 
         }
         //initialise arraylist with null values
-        ArrayList<BinomialHeapNode<T>> rootArray = new ArrayList<BinomialHeapNode<T>>();
-        for(int i=0; i<=maxOrder; i++){
+        ArrayList<BinomialHeapNode<T>> rootArray = new ArrayList<BinomialHeapNode<T>>(maxOrder+1);
+        for(int i=0; i<=maxOrder+1; i++){
             rootArray.add(null);
         }
         //now iterate through roots and merge if necessary
