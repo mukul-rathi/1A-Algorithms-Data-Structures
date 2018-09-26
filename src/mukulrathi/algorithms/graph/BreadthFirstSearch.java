@@ -10,12 +10,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BreadthFirstSearch {
-    public BreadthFirstSearch(Graph g){
-        for (Vertex v: g.vertices){
-            v.distance = Integer.MAX_VALUE;
-            v.seen = false;
-            v.parent = null;
-        }
+
+
+    public static void BFS(Vertex source, Graph g) {
+        g.initGraph();
+        BFS(source);
     }
 
     public static void BFS(Vertex source) {
@@ -39,6 +38,10 @@ public class BreadthFirstSearch {
             }
 
         }
+    }
+    public static List<Vertex> BFS_path(Vertex source, Vertex target, Graph g) throws PathNotFoundException {
+        g.initGraph();
+        return BFS_path(source,target);
     }
 
     public static List<Vertex> BFS_path(Vertex source, Vertex target) throws PathNotFoundException {
