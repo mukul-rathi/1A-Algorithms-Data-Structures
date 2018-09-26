@@ -3,14 +3,17 @@ package mukulrathi.algorithms.graph;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Vertex<T>{
+public class Vertex{
     // use package modifier for brevity of graph algorithms (should use private and getters/setters in production)
-     T value;
-     boolean seen;
-     int distance;
-     List<Vertex> neighbours; //Adjacency list representation
+     double value;
+    ArrayList<Vertex> neighbours; //Adjacency list representation
+    //used for search algorithms:
+    boolean seen;
+    int distance;
+    Vertex parent;
 
-    public Vertex(T new_val){
+
+    public Vertex(double new_val){
         value = new_val;
         neighbours = new ArrayList<Vertex>();
     }
