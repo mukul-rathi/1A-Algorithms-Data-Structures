@@ -9,13 +9,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DepthFirstSearch {
-    public DepthFirstSearch(Graph g){
-        for (Vertex v: g.vertices){
+    public DepthFirstSearch(Graph g) {
+        for (Vertex v : g.vertices) {
             v.distance = Integer.MAX_VALUE;
             v.seen = false;
             v.parent = null;
         }
     }
+
     public static void DFS(Vertex source) {
         source.distance = 0;
         source.parent = null;
@@ -24,7 +25,7 @@ public class DepthFirstSearch {
         while (!toExplore.isEmpty()) {
             try {
                 Vertex v = toExplore.pop();
-                for (Vertex w : v.neighbours) {
+                for (Vertex w : v.neighbours.keySet()) {
                     if (!w.seen) {
                         w.seen = true;
                         w.parent = v;
@@ -44,7 +45,7 @@ public class DepthFirstSearch {
         ArrayList<Vertex> path = new ArrayList<Vertex>();
         Vertex curr = target;
         while (curr != source) {
-            if(curr==null){
+            if (curr == null) {
                 throw new PathNotFoundException();
             }
             path.add(0, curr);
@@ -54,4 +55,22 @@ public class DepthFirstSearch {
         return path;
 
     }
+
+    public static void DFS_recurse(Vertex source) {
+        visit(source);
+    }
+
+    private static void visit(Vertex v) {
+        v.seen = true;
+        for (Vertex w : v.neighbours.keySet()) {
+
+            if (!w.seen) {
+                w.seen = true;
+                w.parent = v;
+                w.distance = v.distance + 1;
+                visit(w);
+            }
+        }
+    }
+
 }

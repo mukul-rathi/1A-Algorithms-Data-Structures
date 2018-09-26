@@ -26,7 +26,7 @@ public class BreadthFirstSearch {
         while (!toExplore.isEmpty()) {
             try {
                 Vertex v = toExplore.get();
-                for (Vertex w : v.neighbours) {
+                for (Vertex w : v.neighbours.keySet()) {
                     if (!w.seen) {
                         w.seen = true;
                         w.parent = v;
