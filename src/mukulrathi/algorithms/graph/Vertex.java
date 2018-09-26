@@ -10,7 +10,7 @@ public class Vertex{
     HashMap<Vertex, Double> neighbours; //Adjacency list representation
     //used for search algorithms:
     boolean seen;
-    int distance;
+    double distance;
     Vertex parent;
 
 
