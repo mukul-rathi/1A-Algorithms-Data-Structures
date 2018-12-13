@@ -2,13 +2,13 @@ package mukulrathi.algorithms.graph;
 
 import java.util.PriorityQueue;
 
-public class Dijkstra {
+public class Dijkstra { // O(VlgV + E) using Fibonacci Heap - shortest path if weights>=0 in graph
 
-    public static void dijkstra(Vertex source, Graph g){
+    public static void shortestPath(Vertex source, Graph g){
         g.initGraph();
-        dijkstra(source);
+        shortestPath(source);
     }
-    public static void dijkstra(Vertex source){
+    public static void shortestPath(Vertex source){
         source.distance = 0;
         source.parent = null;
         PriorityQueue<Vertex> toExplore = new PriorityQueue<Vertex>();
