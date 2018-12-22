@@ -14,17 +14,21 @@ public class Dijkstra { // O(VlgV + E) using Fibonacci Heap - shortest path if w
         PriorityQueue<Vertex> toExplore = new PriorityQueue<Vertex>();
         toExplore.add(source);
         while (!toExplore.isEmpty()) {
-        }
-                Vertex v = toExplore.remove();
-                for (Vertex w : v.neighbours.keySet()) {
-                    if (w.distance < (v.distance + v.neighbours.get(w))){
-                        w.parent = v;
-                        w.distance = v.distance + v.neighbours.get(w);
-                        //if w in neighbours we'd decrease key
+            Vertex v = toExplore.remove();
+            for (Vertex w : v.neighbours.keySet()) {
+                if (w.distance < (v.distance + v.neighbours.get(w))) {
+                    w.parent = v;
+                    w.distance = v.distance + v.neighbours.get(w);
+                    //if w in neighbours we'd decrease key
+                    if(toExplore.contains(w)){
+                        //toExplore.decreaseKey(w) (no explicit method in Java (but done implicitly).
+                    }
+                    else {
                         toExplore.add(w);
                     }
                 }
-
+            }
+        }
 
 
 
