@@ -10,6 +10,7 @@ public class Graph {
             v.distance = Integer.MAX_VALUE;
             v.seen = false;
             v.parent = null;
+            v.isInTree = false;
         }
     }
 }

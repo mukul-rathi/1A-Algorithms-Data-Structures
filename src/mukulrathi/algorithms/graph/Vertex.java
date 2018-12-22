@@ -12,6 +12,7 @@ public class Vertex {
     boolean seen;
     int distance;
     Vertex parent;
+    boolean isInTree;
 
     int helperDistance;
 
