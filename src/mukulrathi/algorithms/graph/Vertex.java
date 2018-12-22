@@ -11,7 +11,7 @@ public class Vertex {
     //used for search algorithms:
     boolean seen;
     int distance;
-    Vertex parent;
+    public Vertex parent;
     boolean isInTree;
 
     int helperDistance;
