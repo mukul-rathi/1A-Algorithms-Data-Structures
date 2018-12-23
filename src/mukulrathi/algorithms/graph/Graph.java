@@ -6,7 +6,7 @@ public class Graph {
     public List<Vertex> vertices;
     public List<Edge> edges;
     public  void initGraph() {
-        for (Vertex v : this.vertices) {
+        for (Vertex v : vertices) {
             v.distance = Integer.MAX_VALUE;
             v.seen = false;
             v.parent = null;
